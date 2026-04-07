@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VIP Region Taxi</title>
+    <title>VIP Region Taxi — Tlepbergen Kuanysh</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -21,11 +21,10 @@
         .container { 
             width: 90%; max-width: 420px; padding: 30px; background: var(--glass);
             backdrop-filter: blur(15px); border-radius: 28px; border: 1px solid var(--border);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6); text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6); text-align: center; margin: 20px 0;
         }
         h2 { font-weight: 300; letter-spacing: 3px; color: var(--gold); margin-bottom: 30px; text-transform: uppercase; }
         
-        /* Кнопки выбора роли */
         .main-btn { 
             width: 100%; padding: 20px; margin: 12px 0; border-radius: 14px; border: none; 
             font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s;
@@ -33,7 +32,6 @@
         .btn-gold { background: var(--gold); color: black; box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2); }
         .btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
 
-        /* Формы и сетки */
         .section { display: none; text-align: left; }
         .section.active { display: block; }
         .label { font-size: 11px; color: #777; text-transform: uppercase; margin: 15px 0 8px 5px; display: block; letter-spacing: 1px; }
@@ -45,7 +43,6 @@
         }
         input:focus { border-color: var(--gold); background: rgba(255,255,255,0.07); }
 
-        /* Направления */
         .route-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .route-item { 
             background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; 
@@ -53,7 +50,6 @@
         }
         .route-item.active { border-color: var(--gold); background: rgba(212, 175, 55, 0.1); color: var(--gold); }
 
-        /* Выбор пассажиров */
         .pass-selector { display: flex; justify-content: space-between; margin-top: 5px; }
         .pass-btn { 
             width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; 
@@ -62,7 +58,6 @@
         }
         .pass-btn.active { background: var(--gold); color: black; border-color: var(--gold); box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
 
-        /* Список заказов */
         .order-card { 
             background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px; 
             margin-bottom: 12px; border-left: 3px solid var(--gold);
@@ -71,6 +66,12 @@
             display: block; background: #28a745; color: white; text-align: center; 
             text-decoration: none; padding: 12px; border-radius: 10px; margin-top: 10px; font-weight: bold;
         }
+
+        .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 13px; color: #666; text-align: center; }
+        .insta-link { display: inline-block; margin-top: 10px; color: var(--gold); text-decoration: none; font-weight: 600; }
+        .donation-box { margin-top: 25px; padding: 15px; background: rgba(212, 175, 55, 0.05); border-radius: 12px; border: 1px dashed var(--gold); }
+        .card-number { display: block; font-size: 16px; color: white; margin: 8px 0; font-family: monospace; letter-spacing: 1px; cursor: pointer; }
+        .copy-hint { font-size: 10px; color: var(--gold); text-transform: uppercase; }
         .back-link { display: block; text-align: center; margin-top: 20px; color: #555; font-size: 13px; cursor: pointer; }
     </style>
 </head>
@@ -78,14 +79,13 @@
 
 <div class="container">
     <div id="screen-main" class="section active">
-        <h2>Такси Алматы-Қорам-Шелек</h2>
+        <h2>PREMIUM TAXI</h2>
         <button class="main-btn btn-gold" onclick="show('screen-passenger')">Жолаушы (Пассажир)</button>
         <button class="main-btn btn-outline" onclick="show('screen-driver')">Жүргізуші (Водитель)</button>
     </div>
 
     <div id="screen-passenger" class="section">
         <h2 style="font-size: 18px;">Тапсырыс беру</h2>
-        
         <span class="label">Бағытты таңдаңыз:</span>
         <div class="route-grid">
             <div class="route-item active" onclick="setR('Алматы - Қорам', this)">Алматы - Қорам</div>
@@ -111,18 +111,27 @@
             <div class="pass-btn" onclick="setP(5, this)">5</div>
             <div class="pass-btn" onclick="setP(6, this)">6</div>
         </div>
-
         <span class="label">Уақыты:</span>
         <input type="time" id="time">
-
         <button class="main-btn btn-gold" style="margin-top:25px;" onclick="send()">ТАПСЫРЫС БЕРУ</button>
         <span class="back-link" onclick="show('screen-main')">← Артқа қайту</span>
     </div>
 
     <div id="screen-driver" class="section">
         <h2 style="font-size: 18px;">Белсенді тапсырыстар</h2>
-        <div id="orders-list">Загрузка...</div>
+        <div id="orders-list">Жүктеу...</div>
         <span class="back-link" onclick="show('screen-main')">← Басты бетке</span>
+    </div>
+
+    <div class="footer">
+        <p>© Тлепберген Қуаныш, 2026</p>
+        <p>Астана қаласы | Руы: Албан (Қорам ауылы)</p>
+        <a href="https://instagram.com/kukandrio" target="_blank" class="insta-link">📸 Instagram: @kukandrio</a>
+        <div class="donation-box">
+            <span class="label" style="margin:0; color:var(--gold);">Жобаны қолдау (Шай-пұл):</span>
+            <span class="card-number" id="cardNumber" onclick="copyCard()">4400 4303 8692 1370</span>
+            <span class="copy-hint" id="copyStatus">Көшіру үшін нөмірді басыңыз</span>
+        </div>
     </div>
 </div>
 
@@ -170,17 +179,59 @@
     }
 
     async function load() {
-        const { data } = await client.from('orders').select('*').order('created_at', { ascending: false });
+        // УДАЛЕНИЕ ЧЕРЕЗ 2 ЧАСА: Показываем заказы только за последние 2 часа
+        const timeLimit = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+
+        const { data } = await client
+            .from('orders')
+            .select('*')
+            .gt('created_at', timeLimit)
+            .order('created_at', { ascending: false });
+
         const list = document.getElementById('orders-list');
-        list.innerHTML = data.length ? "" : "Тапсырыстар жоқ";
-        data.forEach(o => {
-            list.innerHTML += `
-                <div class="order-card">
-                    <div style="color:var(--gold); font-size:12px; font-weight:600;">${o.route_from}</div>
-                    <div style="margin:5px 0; font-size:16px;"><b>${o.name}</b> — ${o.passengers} адам</div>
-                    <div style="color:#666; font-size:13px;">Уақыты: ${o.time}</div>
-                    <a href="tel:${o.phone}" class="call-btn">📞 ҚОҢЫРАУ</a>
-                </div>`;
+        list.innerHTML = data && data.length ? "" : "Қазірше тапсырыстар жоқ";
+        
+        if(data) {
+            data.forEach(o => {
+                list.innerHTML += `
+                    <div class="order-card" id="card-${o.id}">
+                        <div style="color:var(--gold); font-size:12px; font-weight:600;">${o.route_from}</div>
+                        <div style="margin:5px 0; font-size:16px;"><b>${o.name}</b> — ${o.passengers} адам</div>
+                        <div style="color:#666; font-size:13px;">Уақыты: ${o.time}</div>
+                        <button class="call-btn" style="width:100%; border:none; cursor:pointer;" onclick="handleCall('${o.id}', '${o.phone}')">📞 ҚОҢЫРАУ ШАЛУ</button>
+                    </div>`;
+            });
+        }
+    }
+
+    async function handleCall(id, phone) {
+        // Сначала совершаем звонок
+        window.location.href = `tel:${phone}`;
+
+        // После звонка (через небольшую паузу) спрашиваем водителя
+        setTimeout(async () => {
+            if (confirm("Сіз бұл жолаушыны алдыңыз ба? (Вы забрали этого клиента?)")) {
+                // Если ДА — удаляем из базы сразу
+                const { error } = await client.from('orders').delete().eq('id', id);
+                if (!error) {
+                    const card = document.getElementById(`card-${id}`);
+                    if(card) card.style.display = 'none';
+                    alert("Тапсырыс тізімнен алынды.");
+                }
+            }
+        }, 2000);
+    }
+
+    function copyCard() {
+        const cardText = "4400430386921370";
+        navigator.clipboard.writeText(cardText).then(() => {
+            const status = document.getElementById('copyStatus');
+            status.innerText = "Нөмір көшірілді! Рахмет!";
+            status.style.color = "#28a745";
+            setTimeout(() => {
+                status.innerText = "Көшіру үшін нөмірді басыңыз";
+                status.style.color = "var(--gold)";
+            }, 3000);
         });
     }
 
