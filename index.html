@@ -1,3 +1,9 @@
+Лови! Я просто вставил блок с логотипом в твой код сразу после начала контейнера и добавил стиль, чтобы он смотрелся аккуратно и по центру.
+
+Важно: Убедись, что файл с логотипом на GitHub называется именно logo_4k.png.
+
+HTML
+
 <!DOCTYPE html>
 <html lang="kk">
 <head>
@@ -23,6 +29,17 @@
             backdrop-filter: blur(15px); border-radius: 28px; border: 1px solid var(--border);
             box-shadow: 0 20px 50px rgba(0,0,0,0.6); text-align: center; margin: 20px 0;
         }
+
+        /* Стиль для логотипа */
+        .main-logo {
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+            margin: 0 auto 20px auto;
+            display: block;
+            border-radius: 15px;
+        }
+
         h2 { font-weight: 300; letter-spacing: 3px; color: var(--gold); margin-bottom: 30px; text-transform: uppercase; }
         
         .main-btn { 
@@ -78,6 +95,8 @@
 <body>
 
 <div class="container">
+    <img src="logo_4k.png" alt="Logo" class="main-logo">
+
     <div id="screen-main" class="section active">
         <h2>Алматы-Қорам-Шелек такси</h2>
         <button class="main-btn btn-gold" onclick="show('screen-passenger')">Жолаушы (Пассажир)</button>
@@ -179,7 +198,6 @@
     }
 
     async function load() {
-        // УДАЛЕНИЕ ЧЕРЕЗ 2 ЧАСА: Показываем заказы только за последние 2 часа
         const timeLimit = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
 
         const { data } = await client
@@ -205,13 +223,9 @@
     }
 
     async function handleCall(id, phone) {
-        // Сначала совершаем звонок
         window.location.href = `tel:${phone}`;
-
-        // После звонка (через небольшую паузу) спрашиваем водителя
         setTimeout(async () => {
-            if (confirm("Сіз бұл жолаушыны алдыңыз ба? (Вы забрали этого клиента?)")) {
-                // Если ДА — удаляем из базы сразу
+            if (confirm("Сіз бұл жолаушыны алдыңыз ба?")) {
                 const { error } = await client.from('orders').delete().eq('id', id);
                 if (!error) {
                     const card = document.getElementById(`card-${id}`);
@@ -236,11 +250,6 @@
     }
 
     document.getElementById('time').value = "12:00";
-
-    <div class="main-logo-4k" style="text-align: center; margin-bottom: 30px;">
-    <img src="logo.png" alt="VIP Taxi Logo" style="max-width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--border);">
-</div>
-    
 </script>
 </body>
 </html>
