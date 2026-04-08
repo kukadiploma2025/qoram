@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="google" content="notranslate">
-    <title>VIP TAXI</title>
+    <title>ҚОРАМ-ШЕЛЕК ТАКСИ</title>
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="VIP Taxi">
-    <link rel="apple-touch-icon" href="logo1.png">
+    <meta name="apple-mobile-web-app-title" content="Taxi">
+    <link rel="apple-touch-icon" href="logo.png">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
@@ -26,14 +26,11 @@
             background-image: radial-gradient(circle at top right, #1a1a1a, #0a0a0a);
         }
 
-        /* Переключатель языков */
         .lang-picker {
             display: flex; gap: 10px; margin-bottom: 15px; background: var(--glass);
             padding: 8px 15px; border-radius: 20px; border: 1px solid var(--border);
         }
-        .lang-btn {
-            cursor: pointer; opacity: 0.5; transition: 0.3s; font-size: 14px; font-weight: 600;
-        }
+        .lang-btn { cursor: pointer; opacity: 0.5; transition: 0.3s; font-size: 14px; font-weight: 600; }
         .lang-btn.active { opacity: 1; color: var(--gold); transform: scale(1.1); }
 
         .container { 
@@ -84,7 +81,13 @@
         .pass-btn.active { background: var(--gold); color: black; }
 
         .order-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px; margin-bottom: 12px; border-left: 3px solid var(--gold); }
-        .footer { font-size: 12px; color: #666; text-align: center; padding-bottom: 30px; }
+        
+        /* FOOTER & DONATION STYLES */
+        .footer { width: 90%; max-width: 420px; text-align: center; color: #666; font-size: 13px; padding-bottom: 40px; }
+        .insta-link { display: inline-block; margin: 10px 0; color: var(--gold); text-decoration: none; font-weight: 600; }
+        .donation-box { margin-top: 20px; padding: 15px; background: rgba(212, 175, 55, 0.05); border-radius: 16px; border: 1px dashed var(--gold); }
+        .card-number { display: block; font-size: 16px; color: white; margin: 8px 0; font-family: monospace; letter-spacing: 1px; cursor: pointer; }
+        .copy-hint { font-size: 10px; color: var(--gold); text-transform: uppercase; }
         .back-link { display: block; text-align: center; margin-top: 20px; color: #555; font-size: 13px; cursor: pointer; }
     </style>
 </head>
@@ -99,11 +102,11 @@
 
 <div class="container">
     <div class="logo-wrapper">
-        <img src="logo.png" alt="VIP TAXI" class="main-logo">
+        <img src="logo.png" alt="TAXI" class="main-logo">
     </div>
 
     <div id="screen-main" class="section active">
-        <h2 id="t-title">АЛМАТЫ-ҚОРАМ-ШЕЛЕК ТАКСИ</h2>
+        <h2 id="t-title" translate="no">АЛМАТЫ-ҚОРАМ-ШЕЛЕК ТАКСИ</h2>
         <button class="main-btn btn-gold" id="t-pass-btn" onclick="show('screen-passenger')">Жолаушы</button>
         <button class="main-btn btn-outline" id="t-driver-btn" onclick="show('screen-driver')">Жүргізуші</button>
     </div>
@@ -138,19 +141,26 @@
         <input type="time" id="time" value="12:00">
 
         <button class="main-btn btn-gold" id="t-send-btn" onclick="send()">ЖІБЕРУ</button>
-        <span class="back-link" id="t-back" onclick="show('screen-main')">← Артқа</span>
+        <span class="back-link" id="t-back" onclick="show('screen-main')">← Артқа қайту</span>
     </div>
 
     <div id="screen-driver" class="section">
         <h2 id="t-list-title" style="font-size: 18px;">Тапсырыстар</h2>
         <div id="orders-list">...</div>
-        <span class="back-link" id="t-back-driver" onclick="show('screen-main')">← Артқа</span>
+        <span class="back-link" id="t-back-driver" onclick="show('screen-main')">← Артқа қайту</span>
     </div>
 </div>
 
 <div class="footer">
     <p>© Тлепберген Қуаныш, 2026</p>
-    <p translate="no">Руы: Албан (Қорам)</p>
+    <p>Астана қаласы | <span translate="no">Руы: Албан</span> (<span translate="no">Қорам</span> ауылы)</p>
+    <a href="https://instagram.com/kukandrio" target="_blank" class="insta-link">📸 Instagram: @kukandrio</a>
+    
+    <div class="donation-box">
+        <span class="label" style="margin:0; color:var(--gold);">Жобаны қолдау (Шай-пұл):</span>
+        <span class="card-number" id="cardNumber" onclick="copyCard()">4400 4303 8692 1370</span>
+        <span class="copy-hint" id="copyStatus">Көшіру үшін нөмірді басыңыз</span>
+    </div>
 </div>
 
 <script>
@@ -160,32 +170,28 @@
 
     const translations = {
         kk: {
-            title: "АЛМАТЫ-ҚОРАМ-ШЕЛЕК ТАКСИ",
-            passBtn: "Жолаушы", driverBtn: "Жүргізуші",
+            title: "АЛМАТЫ-ҚОРАМ-ШЕЛЕК ТАКСИ", passBtn: "Жолаушы", driverBtn: "Жүргізуші",
             orderTitle: "Тапсырыс беру", labelRoute: "Бағытты таңдаңыз:",
             labelInfo: "Мәліметтер:", namePh: "Есіміңіз", labelCount: "Адам саны:",
             labelTime: "Уақыты:", sendBtn: "ЖІБЕРУ", back: "← Артқа қайту",
             listTitle: "Белсенді тапсырыстар", empty: "Тапсырыстар жоқ", call: "ҚОҢЫРАУ ШАЛУ"
         },
         ru: {
-            title: "ТАКСИ АЛМАТЫ-КОРАМ-ШЕЛЕК",
-            passBtn: "Пассажир", driverBtn: "Водитель",
+            title: "ТАКСИ АЛМАТЫ-КОРАМ-ШЕЛЕК", passBtn: "Пассажир", driverBtn: "Водитель",
             orderTitle: "Заказать такси", labelRoute: "Выберите маршрут:",
             labelInfo: "Ваши данные:", namePh: "Ваше имя", labelCount: "Кол-во человек:",
             labelTime: "Время:", sendBtn: "ОТПРАВИТЬ", back: "← Назад",
             listTitle: "Список заказов", empty: "Заказов пока нет", call: "ПОЗВОНИТЬ"
         },
         en: {
-            title: "ALMATY-QORAM-SHELEK TAXI",
-            passBtn: "Passenger", driverBtn: "Driver",
+            title: "ALMATY-QORAM-SHELEK TAXI", passBtn: "Passenger", driverBtn: "Driver",
             orderTitle: "Book a Ride", labelRoute: "Select route:",
             labelInfo: "Details:", namePh: "Your name", labelCount: "Passengers:",
             labelTime: "Time:", sendBtn: "ORDER NOW", back: "← Back",
             listTitle: "Active Orders", empty: "No orders found", call: "CALL DRIVER"
         },
         ug: {
-            title: "АЛМАТА-ҚОРАМ-ШЕЛЕК ТАКСИСИ",
-            passBtn: "Йоловчи", driverBtn: "Ҳайдовчи",
+            title: "АЛМАТА-ҚОРАМ-ШЕЛЕК ТАКСИСИ", passBtn: "Йоловчи", driverBtn: "Ҳайдовчи",
             orderTitle: "Заказ бериш", labelRoute: "Йолни таллаң:",
             labelInfo: "Мәлумотлар:", namePh: "Исмиңиз", labelCount: "Адәм сани:",
             labelTime: "Вақти:", sendBtn: "ӘВӘТКҮШ", back: "← Кәйнигә",
@@ -201,7 +207,6 @@
         curLang = lang;
         document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
-        
         const t = translations[lang];
         document.getElementById('t-title').innerText = t.title;
         document.getElementById('t-pass-btn').innerText = t.passBtn;
@@ -241,11 +246,10 @@
         const n = document.getElementById('name').value;
         const p = document.getElementById('phone').value;
         const t = document.getElementById('time').value;
-        if(!n || !p || !t) return alert("Fill all fields!");
-
+        if(!n || !p || !t) return alert("Толтырыңыз!");
         const { error } = await client.from('orders').insert([{ name: n, route_from: route, route_to: '', passengers, time: t, phone: p }]);
         if (error) alert(error.message);
-        else { alert("Success!"); location.reload(); }
+        else { alert("Сәтті! Тапсырыс қабылданды."); location.reload(); }
     }
 
     async function load() {
@@ -253,19 +257,31 @@
         const { data } = await client.from('orders').select('*').gt('created_at', timeLimit).order('created_at', { ascending: false });
         const list = document.getElementById('orders-list');
         const t = translations[curLang];
-        
         list.innerHTML = data && data.length ? "" : t.empty;
         if(data) {
             data.forEach(o => {
                 list.innerHTML += `
                     <div class="order-card">
-                        <div style="color:var(--gold); font-size:12px; font-weight:600;">${o.route_from}</div>
+                        <div translate="no" style="color:var(--gold); font-size:12px; font-weight:600;">${o.route_from}</div>
                         <div style="margin:5px 0; font-size:16px;"><b>${o.name}</b> — ${o.passengers}</div>
                         <div style="color:#666; font-size:13px;">${o.time}</div>
                         <button class="main-btn btn-gold" style="padding:10px; font-size:12px;" onclick="window.location.href='tel:${o.phone}'">${t.call}</button>
                     </div>`;
             });
         }
+    }
+
+    function copyCard() {
+        const cardText = "4400430386921370";
+        navigator.clipboard.writeText(cardText).then(() => {
+            const status = document.getElementById('copyStatus');
+            status.innerText = "Нөмір көшірілді! Рахмет!";
+            status.style.color = "#28a745";
+            setTimeout(() => {
+                status.innerText = "Көшіру үшін нөмірді басыңыз";
+                status.style.color = "var(--gold)";
+            }, 3000);
+        });
     }
 </script>
 </body>
