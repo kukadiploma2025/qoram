@@ -1,8 +1,6 @@
-Проблема была в том, что в JavaScript порядок строк имеет значение: нельзя использовать секретный ключ или адрес базы до того, как ты их объявил.
+Вот абсолютно полный код для твоего файла admin.html. Я убрал все сложные шифровки, которые могли глючить, и оставил простую, надежную проверку пароля.
 
-Держи полный, исправленный код для твоего файла admin.html. Я собрал всё воедино, исправил ошибки с порядком переменных и добавил защиту от лишних пробелов в ссылках.
-
-Просто удали всё из своего admin.html и вставь это:
+Просто скопируй всё это, удали старое содержимое файла и вставь этот код.
 
 HTML
 
@@ -11,29 +9,83 @@ HTML
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Control Panel</title>
+    <title>Qoram Taxi | Admin Panel</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     
     <style>
-        body { font-family: -apple-system, system-ui, sans-serif; background: #0a0a0a; color: white; padding: 20px; margin: 0; }
+        :root {
+            --gold: #D4AF37;
+            --dark: #0a0a0a;
+            --card: #161616;
+        }
+        body { 
+            font-family: -apple-system, system-ui, sans-serif; 
+            background: var(--dark); 
+            color: white; 
+            padding: 20px; 
+            margin: 0; 
+        }
         .wrapper { max-width: 500px; margin: 40px auto; padding: 20px; }
-        .card { background: #161616; padding: 25px; border-radius: 20px; border: 1px solid #222; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h2 { color: #D4AF37; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; }
-        input { width: 100%; padding: 15px; margin: 10px 0; background: #202020; border: 1px solid #333; color: white; border-radius: 12px; box-sizing: border-box; font-size: 16px; outline: none; }
-        input:focus { border-color: #D4AF37; }
-        button { width: 100%; padding: 15px; background: #D4AF37; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; color: #000; }
-        .item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #222; }
-        .remove-btn { background: #3d1010; color: #ff6b6b; padding: 8px 15px; font-size: 12px; border-radius: 8px; border: none; cursor: pointer; }
-        .info { font-size: 11px; color: #555; margin-bottom: 5px; text-transform: uppercase; }
+        .card { 
+            background: var(--card); 
+            padding: 25px; 
+            border-radius: 20px; 
+            border: 1px solid #222; 
+            margin-bottom: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+        }
+        h2 { color: var(--gold); font-size: 18px; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; }
+        input { 
+            width: 100%; 
+            padding: 15px; 
+            margin: 10px 0; 
+            background: #202020; 
+            border: 1px solid #333; 
+            color: white; 
+            border-radius: 12px; 
+            box-sizing: border-box; 
+            font-size: 16px; 
+            outline: none; 
+        }
+        input:focus { border-color: var(--gold); }
+        button { 
+            width: 100%; 
+            padding: 15px; 
+            background: var(--gold); 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            color: #000; 
+            transition: 0.2s;
+        }
+        button:active { transform: scale(0.98); }
+        .item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px 0; 
+            border-bottom: 1px solid #222; 
+        }
+        .remove-btn { 
+            background: #3d1010; 
+            color: #ff6b6b; 
+            padding: 8px 15px; 
+            font-size: 12px; 
+            border-radius: 8px; 
+            border: none; 
+            cursor: pointer; 
+        }
+        .info-label { font-size: 11px; color: #555; text-transform: uppercase; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
     <div id="gate" class="wrapper">
         <div class="card" style="text-align: center;">
-            <h2>Control Panel</h2>
-            <input type="password" id="session-id" placeholder="Access Code">
+            <h2>Admin Access</h2>
+            <p style="color: #666; font-size: 14px;">Введите пароль для управления базой</p>
+            <input type="password" id="pass-input" placeholder="Пароль">
             <button onclick="verify()">Connect</button>
         </div>
     </div>
@@ -42,99 +94,94 @@ HTML
         <h2>База водителей</h2>
         
         <div class="card">
-            <div class="info">Регистрация</div>
-            <input type="tel" id="u-phone" placeholder="87071112233">
-            <input type="text" id="u-pin" placeholder="PIN код (4 цифры)" maxlength="4">
-            <button onclick="reg()">Добавить в список</button>
+            <div class="info-label">Добавить нового водителя</div>
+            <input type="tel" id="new-phone" placeholder="87071112233">
+            <input type="text" id="new-pin" placeholder="PIN код (4 цифры)" maxlength="4">
+            <button onclick="addDriver()">+ Тіркеу</button>
         </div>
 
         <div class="card">
-            <div class="info">Активные доступы</div>
-            <div id="render-list">Загрузка...</div>
+            <div class="info-label">Список активных доступов</div>
+            <div id="drivers-list">Загрузка...</div>
         </div>
         
-        <button onclick="location.reload()" style="background: #222; color: #666; margin-top: 10px;">Завершить сессию</button>
+        <button onclick="location.reload()" style="background: #222; color: #666; margin-top: 10px;">Выйти</button>
     </div>
 
 <script>
-    // 1. КОНСТАНТЫ СНАЧАЛА (ВАЖНО ДЛЯ ИНИЦИАЛИЗАЦИИ)
+    // 1. НАСТРОЙКИ SUPABASE (ТВОИ ДАННЫЕ)
     const SB_URL = 'https://jgngutjzewogolzpopqt.supabase.co'.trim();
     const SB_KEY = 'sb_publishable_kE0YDikrGftHwZXfMovSJw_7aMAIoFU'.trim();
-    // Хеш пароля kuka2005
-    const _SESSION = "8153406f52e259e001968875560b778c4342f026779402559b357d341b59345a";
-
-    // 2. ПОДКЛЮЧАЕМ БАЗУ
+    
     const db = supabase.createClient(SB_URL, SB_KEY);
 
-    // 3. ФУНКЦИЯ ПРОВЕРКИ
+    // 2. ПРОВЕРКА ПАРОЛЯ
     function verify() {
-        const val = document.getElementById('session-id').value;
-        if (!val) return;
+        const input = document.getElementById('pass-input').value.trim();
         
-        const check = CryptoJS.SHA256(val).toString();
-
-        if(check === _SESSION) {
+        // Пароль: kuka2005
+        if(input === "kuka2005") {
             document.getElementById('gate').style.display = 'none';
             document.getElementById('main-view').style.display = 'block';
-            fetchData();
+            loadDrivers();
         } else {
-            alert("Access Denied");
-            document.getElementById('session-id').value = '';
+            alert("Ошибка: Неверный пароль!");
+            document.getElementById('pass-input').value = '';
         }
     }
 
-    // 4. ДОБАВЛЕНИЕ ВОДИТЕЛЯ
-    async function reg() {
-        const p = document.getElementById('u-phone').value;
-        const n = document.getElementById('u-pin').value;
-        if(!p || !n) return alert("Заполните данные!");
+    // 3. ДОБАВЛЕНИЕ ВОДИТЕЛЯ
+    async function addDriver() {
+        const p = document.getElementById('new-phone').value.trim();
+        const n = document.getElementById('new-pin').value.trim();
+        
+        if(!p || !n) return alert("Заполните все поля!");
 
         const { error } = await db.from('drivers').insert([{ phone: p, pin: n }]);
         
         if(error) {
-            alert("Ошибка записи! Возможно, номер уже есть в базе.");
+            alert("Ошибка! Возможно, этот номер уже есть в базе.");
         } else {
-            document.getElementById('u-phone').value = '';
-            document.getElementById('u-pin').value = '';
-            fetchData();
+            document.getElementById('new-phone').value = '';
+            document.getElementById('new-pin').value = '';
+            loadDrivers();
         }
     }
 
-    // 5. ЗАГРУЗКА СПИСКА
-    async function fetchData() {
-        const container = document.getElementById('render-list');
+    // 4. ЗАГРУЗКА СПИСКА ИЗ БАЗЫ
+    async function loadDrivers() {
+        const listDiv = document.getElementById('drivers-list');
         const { data, error } = await db.from('drivers').select('*').order('created_at', { ascending: false });
         
         if(error) {
-            container.innerHTML = "Ошибка: " + error.message;
+            listDiv.innerHTML = "Ошибка загрузки: " + error.message;
             return;
         }
         
-        container.innerHTML = data.length ? "" : "Список пуст";
+        listDiv.innerHTML = data.length ? "" : "Водителей нет";
         data.forEach(item => {
-            container.innerHTML += `
+            listDiv.innerHTML += `
                 <div class="item">
                     <div>
                         <div style="font-weight: bold; color: #D4AF37;">${item.phone}</div>
                         <div style="font-size: 12px; color: #555;">PIN: ${item.pin}</div>
                     </div>
-                    <button class="remove-btn" onclick="drop('${item.phone}')">Удалить</button>
+                    <button class="remove-btn" onclick="deleteDriver('${item.phone}')">Удалить</button>
                 </div>`;
         });
     }
 
-    // 6. УДАЛЕНИЕ
-    async function drop(phone) {
+    // 5. УДАЛЕНИЕ ВОДИТЕЛЯ
+    async function deleteDriver(phone) {
         if(!confirm("Удалить доступ для " + phone + "?")) return;
-        await db.from('drivers').delete().eq('phone', phone);
-        fetchData();
+        const { error } = await db.from('drivers').delete().eq('phone', phone);
+        if(error) alert("Ошибка при удалении");
+        else loadDrivers();
     }
 
     // ВХОД ПО ENTER
-    document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('session-id').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') verify();
-        });
+    document.getElementById('pass-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') verify();
     });
 </script>
 </body>
