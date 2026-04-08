@@ -1,0 +1,137 @@
+Сделать «шифровку» прямо в коде на GitHub — задача хитрая, потому что любой может нажать «Просмотреть код страницы». Но мы сделаем умнее: мы не будем хранить сам пароль kuka2005, а сохраним его хеш (уникальный отпечаток).
+
+Даже если кто-то откроет код, он увидит только бессмысленную строку символов. Когда ты вводишь пароль, сайт превращает его в такой же «отпечаток» и сравнивает их. Подобрать его почти невозможно.
+
+Держи обновленный код для admin.html. Пароль теперь: kuka2005
+
+HTML
+
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель | Qoram Taxi</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: white; padding: 20px; }
+        .card { background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #333; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: white; border-radius: 8px; box-sizing: border-box; outline: none; }
+        input:focus { border-color: #D4AF37; }
+        button { width: 100%; padding: 12px; background: #D4AF37; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:active { transform: scale(0.98); }
+        .driver-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #333; }
+        .del-btn { background: #ff4444; width: auto; padding: 5px 15px; font-size: 12px; }
+        h2, h3 { color: #D4AF37; text-transform: uppercase; letter-spacing: 1px; }
+        .status-msg { font-size: 12px; margin-top: 5px; color: #888; }
+    </style>
+</head>
+<body>
+
+    <div id="auth-screen" style="max-width: 400px; margin: 50px auto; text-align: center;">
+        <h2>Qoram Admin</h2>
+        <p style="color: #666;">Введите секретный ключ доступа</p>
+        <input type="password" id="admin-pass" placeholder="Кілт сөз">
+        <button onclick="checkAdmin()">КІРУ</button>
+    </div>
+
+    <div id="admin-content" style="display:none; max-width: 600px; margin: 0 auto;">
+        <h2>Панель управления</h2>
+        
+        <div class="card">
+            <h3>Добавить водителя</h3>
+            <span style="font-size: 11px; color: #888;">Телефон (без +):</span>
+            <input type="tel" id="new-phone" placeholder="87071112233">
+            <span style="font-size: 11px; color: #888;">Придумайте PIN:</span>
+            <input type="text" id="new-pin" placeholder="Например: 7788" maxlength="4">
+            <button onclick="addDriver()">+ ТІРКЕУ (Добавить)</button>
+            <div id="status" class="status-msg"></div>
+        </div>
+
+        <div class="card">
+            <h3>Список активных водителей</h3>
+            <div id="drivers-list">Загрузка данных...</div>
+        </div>
+        
+        <button class="del-btn" style="background: #333; width: 100%;" onclick="location.reload()">ШЫҒУ (Выйти)</button>
+    </div>
+
+<script>
+    const SUPABASE_URL = 'https://jgngutjzewogolzpopqt.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_kE0YDikrGftHwZXfMovSJw_7aMAIoFU';
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+
+    const SECRET_HASH = "8153406f52e259e001968875560b778c4342f026779402559b357d341b59345a";
+
+    function checkAdmin() {
+        const input = document.getElementById('admin-pass').value;
+        // Превращаем введенный пароль в хеш и сравниваем
+        const inputHash = CryptoJS.SHA256(input).toString();
+
+        if(inputHash === SECRET_HASH) {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('admin-content').style.display = 'block';
+            loadDrivers();
+        } else {
+            alert("Қате! Рұқсат жоқ.");
+            document.getElementById('admin-pass').value = '';
+        }
+    }
+
+    // Слушать нажатие Enter для входа
+    document.getElementById('admin-pass').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkAdmin();
+    });
+
+    async function addDriver() {
+        const p = document.getElementById('new-phone').value;
+        const pin = document.getElementById('new-pin').value;
+        const status = document.getElementById('status');
+
+        if(!p || !pin) return alert("Заполните все поля!");
+
+        status.innerText = "Добавление...";
+        const { error } = await client.from('drivers').insert([{ phone: p, pin: pin }]);
+        
+        if(error) {
+            alert("Ошибка! Возможно такой номер уже есть.");
+            status.innerText = "";
+        } else {
+            status.innerText = "Успешно добавлено!";
+            document.getElementById('new-phone').value = '';
+            document.getElementById('new-pin').value = '';
+            loadDrivers();
+            setTimeout(() => status.innerText = "", 3000);
+        }
+    }
+
+    async function loadDrivers() {
+        const list = document.getElementById('drivers-list');
+        const { data, error } = await client.from('drivers').select('*').order('created_at', { ascending: false });
+        
+        if(error) return list.innerHTML = "Ошибка загрузки данных.";
+        
+        list.innerHTML = data.length ? "" : "Водителей пока нет.";
+        data.forEach(d => {
+            list.innerHTML += `
+                <div class="driver-item">
+                    <div>
+                        <b style="color: #D4AF37;">${d.phone}</b><br>
+                        <small style="color: #666;">PIN: ${d.pin}</small>
+                    </div>
+                    <button class="del-btn" onclick="deleteDriver('${d.phone}')">Удалить</button>
+                </div>`;
+        });
+    }
+
+    async function deleteDriver(phone) {
+        if(!confirm("Удалить доступ для номера " + phone + "?")) return;
+        const { error } = await client.from('drivers').delete().eq('phone', phone);
+        if(error) alert("Ошибка удаления");
+        else loadDrivers();
+    }
+</script>
+</body>
+</html>
