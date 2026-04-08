@@ -1,9 +1,3 @@
-Понял, без лишних слов. Вот полный готовый код с «эффектом пина» (экран стоит мертво), мультиязычностью, твоим Инстаграмом, номером карты и правильным названием.
-
-Просто скопируй и вставь:
-
-HTML
-
 <!DOCTYPE html>
 <html lang="kk" class="notranslate">
 <head>
@@ -27,7 +21,7 @@ HTML
             --border: rgba(255, 255, 255, 0.1);
         }
 
-        /* ПИН-ЭФФЕКТ: блокировка скролла всей страницы */
+        /* Блокировка системного скролла для PWA эффекта */
         html, body { 
             position: fixed;
             overflow: hidden;
@@ -35,7 +29,7 @@ HTML
             height: 100%;
             margin: 0;
             padding: 0;
-            touch-action: pan-y; /* Разрешаем только вертикальный скролл внутри контента */
+            touch-action: pan-y; 
         }
 
         body { 
@@ -46,7 +40,7 @@ HTML
             flex-direction: column; 
             align-items: center; 
             background-image: radial-gradient(circle at top right, #1a1a1a, #0a0a0a);
-            overflow-y: auto; /* Скроллится только содержимое body */
+            overflow-y: auto; 
             -webkit-overflow-scrolling: touch;
         }
 
@@ -107,6 +101,14 @@ HTML
         .pass-btn.active { background: var(--gold); color: black; }
 
         .order-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px; margin-bottom: 12px; border-left: 3px solid var(--gold); }
+
+        /* Блок помощи водителям */
+        .help-box { margin-top: 25px; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px solid #222; text-align: center; }
+        .help-title { font-size: 11px; color: #555; text-transform: uppercase; margin-bottom: 10px; display: block; }
+        .help-btns { display: flex; gap: 10px; }
+        .help-link { flex: 1; padding: 10px; border-radius: 10px; text-decoration: none; font-size: 12px; font-weight: 600; display: block; text-align: center; }
+        .btn-wa { background: #25D366; color: white; }
+        .btn-call { background: #333; color: var(--gold); border: 1px solid var(--gold); }
         
         .footer { width: 90%; max-width: 420px; text-align: center; color: #666; font-size: 13px; padding-bottom: 40px; flex-shrink: 0; }
         .insta-link { display: inline-block; margin: 10px 0; color: var(--gold); text-decoration: none; font-weight: 600; }
@@ -133,7 +135,7 @@ HTML
     <div id="screen-main" class="section active">
         <h2 id="t-title" translate="no">АЛМАТЫ-ҚОРАМ-ШЕЛЕК ТАКСИ</h2>
         <button class="main-btn btn-gold" id="t-pass-btn" onclick="show('screen-passenger')">Жолаушы</button>
-        <button class="main-btn btn-outline" id="t-driver-btn" onclick="show('screen-driver')">Жүргізуші</button>
+        <button class="main-btn btn-outline" id="t-driver-btn" onclick="show('screen-login')">Жүргізуші</button>
     </div>
 
     <div id="screen-passenger" class="section">
@@ -165,8 +167,29 @@ HTML
         <span class="back-link" id="t-back" onclick="show('screen-main')">← Артқа қайту</span>
     </div>
 
+    <div id="screen-login" class="section">
+        <h2 id="t-login-title" style="font-size: 18px;">Жүргізушіге кіру</h2>
+        <span class="label" id="t-label-login">Номеріңіз:</span>
+        <input type="tel" id="d-phone" placeholder="8 7XX XXX XX XX">
+        <span class="label" id="t-label-pin">PIN код:</span>
+        <input type="password" id="d-pin" placeholder="****" maxlength="4">
+        <button class="main-btn btn-gold" id="t-login-btn" onclick="login()">КІРУ</button>
+        
+        <div class="help-box">
+            <span class="help-title" id="t-help-text">Көмек керек пе немесе пароль ұмыттыңыз ба?</span>
+            <div class="help-btns">
+                <a href="https://wa.me/77074303869" class="help-link btn-wa">WhatsApp</a>
+                <a href="tel:+77074303869" class="help-link btn-call">📞 Қоңырау</a>
+            </div>
+        </div>
+        <span class="back-link" id="t-back-login" onclick="show('screen-main')">← Артқа қайту</span>
+    </div>
+
     <div id="screen-driver" class="section">
-        <h2 id="t-list-title" style="font-size: 18px;">Тапсырыстар</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 id="t-list-title" style="font-size: 18px; margin: 0;">Тапсырыстар</h2>
+            <span style="font-size: 11px; color: var(--gold); cursor: pointer;" onclick="location.reload()">Шығу</span>
+        </div>
         <div id="orders-list">...</div>
         <span class="back-link" id="t-back-driver" onclick="show('screen-main')">← Артқа қайту</span>
     </div>
@@ -194,28 +217,36 @@ HTML
             orderTitle: "Тапсырыс беру", labelRoute: "Бағытты таңдаңыз:",
             labelInfo: "Мәліметтер:", namePh: "Есіміңіз", labelCount: "Адам саны:",
             labelTime: "Уақыты:", sendBtn: "ЖІБЕРУ", back: "← Артқа қайту",
-            listTitle: "Белсенді тапсырыстар", empty: "Тапсырыстар жоқ", call: "ҚОҢЫРАУ ШАЛУ"
+            listTitle: "Белсенді тапсырыстар", empty: "Тапсырыстар жоқ", call: "ҚОҢЫРАУ ШАЛУ",
+            loginTitle: "Жүргізушіге кіру", loginBtn: "КІРУ", errLogin: "Қате номер немесе PIN!",
+            help: "Көмек керек пе немесе пароль ұмыттыңыз ба?"
         },
         ru: {
             title: "ТАКСИ АЛМАТЫ-КОРАМ-ШЕЛЕК", passBtn: "Пассажир", driverBtn: "Водитель",
             orderTitle: "Заказать такси", labelRoute: "Выберите маршрут:",
             labelInfo: "Ваши данные:", namePh: "Ваше имя", labelCount: "Кол-во человек:",
             labelTime: "Время:", sendBtn: "ОТПРАВИТЬ", back: "← Назад",
-            listTitle: "Список заказов", empty: "Заказов пока нет", call: "ПОЗВОНИТЬ"
+            listTitle: "Список заказов", empty: "Заказов пока нет", call: "ПОЗВОНИТЬ",
+            loginTitle: "Вход для водителя", loginBtn: "ВОЙТИ", errLogin: "Неверный номер или PIN!",
+            help: "Нужна помощь или забыли пароль?"
         },
         en: {
             title: "ALMATY-QORAM-SHELEK TAXI", passBtn: "Passenger", driverBtn: "Driver",
             orderTitle: "Book a Ride", labelRoute: "Select route:",
             labelInfo: "Details:", namePh: "Your name", labelCount: "Passengers:",
             labelTime: "Time:", sendBtn: "ORDER NOW", back: "← Back",
-            listTitle: "Active Orders", empty: "No orders found", call: "CALL DRIVER"
+            listTitle: "Active Orders", empty: "No orders found", call: "CALL DRIVER",
+            loginTitle: "Driver Login", loginBtn: "LOGIN", errLogin: "Invalid phone or PIN!",
+            help: "Need help or forgot password?"
         },
         ug: {
             title: "АЛМАТА-ҚОРАМ-ШЕЛЕК ТАКСИСИ", passBtn: "Йоловчи", driverBtn: "Ҳайдовчи",
             orderTitle: "Заказ бериш", labelRoute: "Йолни таллаң:",
             labelInfo: "Мәлумотлар:", namePh: "Исмиңиз", labelCount: "Адәм сани:",
             labelTime: "Вақти:", sendBtn: "ӘВӘТКҮШ", back: "← Кәйнигә",
-            listTitle: "Заказлар тизими", empty: "Заказлар йоқ", call: "ТЕЛЕФОН ҚИЛИШ"
+            listTitle: "Заказлар тизими", empty: "Заказлар йоқ", call: "ТЕЛЕФОН ҚИЛИШ",
+            loginTitle: "Кириш", loginBtn: "КИРИШ", errLogin: "Хата номер яки PIN!",
+            help: "Ярдәм керәкму яки пароль унтуп қалдиңизму?"
         }
     };
 
@@ -240,14 +271,17 @@ HTML
         document.getElementById('t-send-btn').innerText = t.sendBtn;
         document.getElementById('t-back').innerText = t.back;
         document.getElementById('t-back-driver').innerText = t.back;
+        document.getElementById('t-back-login').innerText = t.back;
         document.getElementById('t-list-title').innerText = t.listTitle;
+        document.getElementById('t-login-title').innerText = t.loginTitle;
+        document.getElementById('t-login-btn').innerText = t.loginBtn;
+        document.getElementById('t-help-text').innerText = t.help;
         if(document.getElementById('screen-driver').classList.contains('active')) load();
     }
 
     function show(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        if(id === 'screen-driver') load();
     }
 
     function setR(val, el) {
@@ -262,30 +296,55 @@ HTML
         el.classList.add('active');
     }
 
+    async function login() {
+        const phone = document.getElementById('d-phone').value.trim();
+        const pin = document.getElementById('d-pin').value.trim();
+        const t = translations[curLang];
+        if(!phone || !pin) return alert("Толтырыңыз!");
+
+        const { data, error } = await client.from('drivers').select('*').eq('phone', phone).eq('pin', pin).single();
+
+        if (data) {
+            show('screen-driver');
+            load();
+        } else {
+            alert(t.errLogin);
+        }
+    }
+
     async function send() {
         const n = document.getElementById('name').value;
         const p = document.getElementById('phone').value;
         const t = document.getElementById('time').value;
         if(!n || !p || !t) return alert("Толтырыңыз!");
-        const { error } = await client.from('orders').insert([{ name: n, route_from: route, route_to: '', passengers, time: t, phone: p }]);
+        const { error } = await client.from('orders').insert([{ name: n, route_from: route, passengers, time: t, phone: p }]);
         if (error) alert(error.message);
         else { alert("Сәтті! Тапсырыс қабылданды."); location.reload(); }
     }
 
     async function load() {
-        const timeLimit = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
+        const timeLimit = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();
         const { data } = await client.from('orders').select('*').gt('created_at', timeLimit).order('created_at', { ascending: false });
         const list = document.getElementById('orders-list');
         const t = translations[curLang];
         list.innerHTML = data && data.length ? "" : t.empty;
+        
         if(data) {
             data.forEach(o => {
+                const cleanPhone = o.phone.replace(/\D/g, '');
+                const message = `Сәлеметсіз бе, ${o.name}! \nТапсырысыңыз бойынша:\n📍 Бағыт: ${o.route_from}\n👥 Адам саны: ${o.passengers}\n⏰ Уақыты: ${o.time}\n\nТапсырыс өзекті ме? Мен сізді алып кетуге дайынмын.`;
+                const waText = encodeURIComponent(message);
+
                 list.innerHTML += `
                     <div class="order-card">
                         <div translate="no" style="color:var(--gold); font-size:12px; font-weight:600;">${o.route_from}</div>
-                        <div style="margin:5px 0; font-size:16px;"><b>${o.name}</b> — ${o.passengers}</div>
-                        <div style="color:#666; font-size:13px;">${o.time}</div>
-                        <button class="main-btn btn-gold" style="padding:10px; font-size:12px;" onclick="window.location.href='tel:${o.phone}'">${t.call}</button>
+                        <div style="margin:5px 0; font-size:16px;"><b>${o.name}</b> — ${o.passengers} адам</div>
+                        <div style="color:#666; font-size:13px;">Уақыты: ${o.time}</div>
+                        <div style="display: flex; gap: 8px; margin-top: 12px;">
+                            <button class="main-btn btn-gold" style="padding:12px; font-size:12px; margin:0; flex: 1;" onclick="window.location.href='tel:${o.phone}'">📞 ${t.call}</button>
+                            <button class="main-btn" style="padding:12px; font-size:12px; margin:0; flex: 1; background: #25D366; color: white;" 
+                                onclick="window.location.href='https://wa.me/${cleanPhone}?text=${waText}'">💬 WhatsApp</button>
+                        </div>
                     </div>`;
             });
         }
