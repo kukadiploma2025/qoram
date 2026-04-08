@@ -1,8 +1,14 @@
+Понял, без лишних слов. Вот полный готовый код с «эффектом пина» (экран стоит мертво), мультиязычностью, твоим Инстаграмом, номером карты и правильным названием.
+
+Просто скопируй и вставь:
+
+HTML
+
 <!DOCTYPE html>
 <html lang="kk" class="notranslate">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="google" content="notranslate">
     <title>ҚОРАМ-ШЕЛЕК ТАКСИ</title>
 
@@ -20,34 +26,54 @@
             --glass: rgba(255, 255, 255, 0.05);
             --border: rgba(255, 255, 255, 0.1);
         }
+
+        /* ПИН-ЭФФЕКТ: блокировка скролла всей страницы */
+        html, body { 
+            position: fixed;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            touch-action: pan-y; /* Разрешаем только вертикальный скролл внутри контента */
+        }
+
         body { 
-            font-family: 'Inter', sans-serif; background: var(--dark); color: white; margin: 0; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh;
+            font-family: 'Inter', sans-serif; 
+            background: var(--dark); 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
             background-image: radial-gradient(circle at top right, #1a1a1a, #0a0a0a);
+            overflow-y: auto; /* Скроллится только содержимое body */
+            -webkit-overflow-scrolling: touch;
         }
 
         .lang-picker {
-            display: flex; gap: 10px; margin-bottom: 15px; background: var(--glass);
+            margin-top: 20px;
+            display: flex; gap: 10px; background: var(--glass);
             padding: 8px 15px; border-radius: 20px; border: 1px solid var(--border);
+            z-index: 10; flex-shrink: 0;
         }
         .lang-btn { cursor: pointer; opacity: 0.5; transition: 0.3s; font-size: 14px; font-weight: 600; }
         .lang-btn.active { opacity: 1; color: var(--gold); transform: scale(1.1); }
 
         .container { 
-            width: 90%; max-width: 420px; padding: 30px; background: var(--glass);
+            width: 90%; max-width: 420px; padding: 25px; background: var(--glass);
             backdrop-filter: blur(15px); border-radius: 28px; border: 1px solid var(--border);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6); text-align: center; margin-bottom: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6); text-align: center; margin: 20px 0;
+            flex-shrink: 0;
         }
 
         .logo-wrapper {
-            width: 100px; height: 100px; margin: 0 auto 20px auto;
+            width: 90px; height: 90px; margin: 0 auto 20px auto;
             background: #000; border-radius: 22px; padding: 8px;
-            border: 1px solid var(--border); box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-            display: flex; align-items: center; justify-content: center;
+            border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
         }
         .main-logo { width: 100%; height: auto; border-radius: 12px; }
 
-        h2 { font-weight: 300; letter-spacing: 1px; color: var(--gold); margin-bottom: 25px; text-transform: uppercase; font-size: 1.2rem; }
+        h2 { font-weight: 300; letter-spacing: 1px; color: var(--gold); margin-bottom: 25px; text-transform: uppercase; font-size: 1.1rem; }
         
         .main-btn { 
             width: 100%; padding: 18px; margin: 10px 0; border-radius: 14px; border: none; 
@@ -82,10 +108,9 @@
 
         .order-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px; margin-bottom: 12px; border-left: 3px solid var(--gold); }
         
-        /* FOOTER & DONATION STYLES */
-        .footer { width: 90%; max-width: 420px; text-align: center; color: #666; font-size: 13px; padding-bottom: 40px; }
+        .footer { width: 90%; max-width: 420px; text-align: center; color: #666; font-size: 13px; padding-bottom: 40px; flex-shrink: 0; }
         .insta-link { display: inline-block; margin: 10px 0; color: var(--gold); text-decoration: none; font-weight: 600; }
-        .donation-box { margin-top: 20px; padding: 15px; background: rgba(212, 175, 55, 0.05); border-radius: 16px; border: 1px dashed var(--gold); }
+        .donation-box { margin-top: 15px; padding: 15px; background: rgba(212, 175, 55, 0.05); border-radius: 16px; border: 1px dashed var(--gold); }
         .card-number { display: block; font-size: 16px; color: white; margin: 8px 0; font-family: monospace; letter-spacing: 1px; cursor: pointer; }
         .copy-hint { font-size: 10px; color: var(--gold); text-transform: uppercase; }
         .back-link { display: block; text-align: center; margin-top: 20px; color: #555; font-size: 13px; cursor: pointer; }
@@ -122,11 +147,9 @@
             <div class="route-item" onclick="setR('Қорам - Шелек', this)">Қорам - Шелек</div>
             <div class="route-item" onclick="setR('Шелек - Қорам', this)">Шелек - Қорам</div>
         </div>
-
         <span class="label" id="t-label-info">Мәліметтер:</span>
         <input type="text" id="name" placeholder="Есіміңіз">
         <input type="tel" id="phone" placeholder="8 7XX XXX XX XX">
-
         <span class="label" id="t-label-count">Адам саны:</span>
         <div class="pass-selector">
             <div class="pass-btn active" onclick="setP(1, this)">1</div>
@@ -136,10 +159,8 @@
             <div class="pass-btn" onclick="setP(5, this)">5</div>
             <div class="pass-btn" onclick="setP(6, this)">6</div>
         </div>
-
         <span class="label" id="t-label-time">Уақыты:</span>
         <input type="time" id="time" value="12:00">
-
         <button class="main-btn btn-gold" id="t-send-btn" onclick="send()">ЖІБЕРУ</button>
         <span class="back-link" id="t-back" onclick="show('screen-main')">← Артқа қайту</span>
     </div>
@@ -155,7 +176,6 @@
     <p>© Тлепберген Қуаныш, 2026</p>
     <p>Астана қаласы | <span translate="no">Руы: Албан</span> (<span translate="no">Қорам</span> ауылы)</p>
     <a href="https://instagram.com/kukandrio" target="_blank" class="insta-link">📸 Instagram: @kukandrio</a>
-    
     <div class="donation-box">
         <span class="label" style="margin:0; color:var(--gold);">Жобаны қолдау (Шай-пұл):</span>
         <span class="card-number" id="cardNumber" onclick="copyCard()">4400 4303 8692 1370</span>
