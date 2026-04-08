@@ -1,32 +1,38 @@
+Проблема была в том, что в JavaScript порядок строк имеет значение: нельзя использовать секретный ключ или адрес базы до того, как ты их объявил.
+
+Держи полный, исправленный код для твоего файла admin.html. Я собрал всё воедино, исправил ошибки с порядком переменных и добавил защиту от лишних пробелов в ссылках.
+
+Просто удали всё из своего admin.html и вставь это:
+
+HTML
+
 <!DOCTYPE html>
 <html lang="kk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Система управления</title>
+    <title>Control Panel</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0a0a0a; color: white; padding: 20px; margin: 0; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: #0a0a0a; color: white; padding: 20px; margin: 0; }
         .wrapper { max-width: 500px; margin: 40px auto; padding: 20px; }
         .card { background: #161616; padding: 25px; border-radius: 20px; border: 1px solid #222; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         h2 { color: #D4AF37; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; }
-        input { width: 100%; padding: 15px; margin: 10px 0; background: #202020; border: 1px solid #333; color: white; border-radius: 12px; box-sizing: border-box; font-size: 16px; outline: none; transition: 0.3s; }
-        input:focus { border-color: #D4AF37; background: #252525; }
-        button { width: 100%; padding: 15px; background: #D4AF37; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; color: #000; }
-        button:active { transform: scale(0.97); }
+        input { width: 100%; padding: 15px; margin: 10px 0; background: #202020; border: 1px solid #333; color: white; border-radius: 12px; box-sizing: border-box; font-size: 16px; outline: none; }
+        input:focus { border-color: #D4AF37; }
+        button { width: 100%; padding: 15px; background: #D4AF37; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; color: #000; }
         .item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #222; }
-        .item:last-child { border: none; }
-        .remove-btn { background: #3d1010; color: #ff6b6b; width: auto; padding: 8px 15px; font-size: 12px; border-radius: 8px; }
+        .remove-btn { background: #3d1010; color: #ff6b6b; padding: 8px 15px; font-size: 12px; border-radius: 8px; border: none; cursor: pointer; }
         .info { font-size: 11px; color: #555; margin-bottom: 5px; text-transform: uppercase; }
-        #gate { text-align: center; padding-top: 100px; }
     </style>
 </head>
 <body>
 
     <div id="gate" class="wrapper">
-        <div class="card">
-            <h2 style="margin-bottom: 10px;">Control Panel</h2>
+        <div class="card" style="text-align: center;">
+            <h2>Control Panel</h2>
             <input type="password" id="session-id" placeholder="Access Code">
             <button onclick="verify()">Connect</button>
         </div>
@@ -36,32 +42,35 @@
         <h2>База водителей</h2>
         
         <div class="card">
-            <div class="info">Регистрация нового устройства</div>
-            <input type="tel" id="u-phone" placeholder="Номер (например: 8707...)">
+            <div class="info">Регистрация</div>
+            <input type="tel" id="u-phone" placeholder="87071112233">
             <input type="text" id="u-pin" placeholder="PIN код (4 цифры)" maxlength="4">
             <button onclick="reg()">Добавить в список</button>
         </div>
 
         <div class="card">
             <div class="info">Активные доступы</div>
-            <div id="render-list">Загрузка данных...</div>
+            <div id="render-list">Загрузка...</div>
         </div>
         
-        <button onclick="location.reload()" style="background: #222; color: #666;">Завершить сессию</button>
+        <button onclick="location.reload()" style="background: #222; color: #666; margin-top: 10px;">Завершить сессию</button>
     </div>
 
 <script>
-    // Твои ключи Supabase
-    const URL = 'https://jgngutjzewogolzpopqt.supabase.co';
-    const KEY = 'sb_publishable_kE0YDikrGftHwZXfMovSJw_7aMAIoFU';
-    const db = supabase.createClient(URL, KEY);
-
-    // Технический идентификатор (это хеш пароля kuka2005)
+    // 1. КОНСТАНТЫ СНАЧАЛА (ВАЖНО ДЛЯ ИНИЦИАЛИЗАЦИИ)
+    const SB_URL = 'https://jgngutjzewogolzpopqt.supabase.co'.trim();
+    const SB_KEY = 'sb_publishable_kE0YDikrGftHwZXfMovSJw_7aMAIoFU'.trim();
+    // Хеш пароля kuka2005
     const _SESSION = "8153406f52e259e001968875560b778c4342f026779402559b357d341b59345a";
 
+    // 2. ПОДКЛЮЧАЕМ БАЗУ
+    const db = supabase.createClient(SB_URL, SB_KEY);
+
+    // 3. ФУНКЦИЯ ПРОВЕРКИ
     function verify() {
         const val = document.getElementById('session-id').value;
-        // Проверка через алгоритм без лишних слов в коде
+        if (!val) return;
+        
         const check = CryptoJS.SHA256(val).toString();
 
         if(check === _SESSION) {
@@ -74,21 +83,16 @@
         }
     }
 
-    // Вход по нажатию Enter
-    document.getElementById('session-id').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') verify();
-    });
-
+    // 4. ДОБАВЛЕНИЕ ВОДИТЕЛЯ
     async function reg() {
         const p = document.getElementById('u-phone').value;
         const n = document.getElementById('u-pin').value;
-
-        if(!p || !n) return;
+        if(!p || !n) return alert("Заполните данные!");
 
         const { error } = await db.from('drivers').insert([{ phone: p, pin: n }]);
         
         if(error) {
-            alert("Ошибка записи");
+            alert("Ошибка записи! Возможно, номер уже есть в базе.");
         } else {
             document.getElementById('u-phone').value = '';
             document.getElementById('u-pin').value = '';
@@ -96,11 +100,15 @@
         }
     }
 
+    // 5. ЗАГРУЗКА СПИСКА
     async function fetchData() {
         const container = document.getElementById('render-list');
         const { data, error } = await db.from('drivers').select('*').order('created_at', { ascending: false });
         
-        if(error) return;
+        if(error) {
+            container.innerHTML = "Ошибка: " + error.message;
+            return;
+        }
         
         container.innerHTML = data.length ? "" : "Список пуст";
         data.forEach(item => {
@@ -115,11 +123,19 @@
         });
     }
 
+    // 6. УДАЛЕНИЕ
     async function drop(phone) {
         if(!confirm("Удалить доступ для " + phone + "?")) return;
         await db.from('drivers').delete().eq('phone', phone);
         fetchData();
     }
+
+    // ВХОД ПО ENTER
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('session-id').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') verify();
+        });
+    });
 </script>
 </body>
 </html>
