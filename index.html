@@ -30,7 +30,6 @@
             align-items: center; 
             background-image: radial-gradient(circle at top right, #1a1a1a, #0a0a0a);
             overflow-y: auto; 
-            /* iPhone "челкасынан" сақтану */
             padding-top: env(safe-area-inset-top);
             -webkit-overflow-scrolling: touch;
         }
@@ -91,7 +90,7 @@
         }
         .pass-btn.active { background: var(--gold); color: black; }
 
-        .order-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px; margin-bottom: 12px; border-left: 3px solid var(--gold); padding: 15px; }
+        .order-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px; margin-bottom: 12px; border-left: 3px solid var(--gold); }
 
         .footer { width: 90%; max-width: 420px; text-align: center; color: #666; font-size: 13px; padding-bottom: 40px; flex-shrink: 0; }
         .insta-link { display: inline-block; margin: 10px 0; color: var(--gold); text-decoration: none; font-weight: 600; }
@@ -176,9 +175,11 @@
     <p>© Тлепберген Қуаныш, 2026</p>
     <p>Астана қаласы | Руы: Албан (Қорам ауылы)</p>
     <a href="https://instagram.com/kukandrio" target="_blank" class="insta-link">📸 Instagram: @kukandrio</a>
+    
     <div class="donation-box">
+        <span id="t-support" style="font-size: 11px; color: var(--gold); font-weight: 600; display: block; margin-bottom: 5px;">ЖОБА АВТОРЫНА ШӘЙ-ПҰЛ:</span>
         <span class="card-number" id="cardNumber" onclick="copyCard()">4400 4303 8692 1370</span>
-        <span class="copy-hint" id="copyStatus">Көшіру үшін басыңыз</span>
+        <span class="copy-hint" id="copyStatus">Көшіру үшін нөмірді басыңыз</span>
     </div>
 </div>
 
@@ -197,28 +198,28 @@
             labelRoute: "Бағытты таңдаңыз:", labelInfo: "Мәліметтер:", labelCount: "Адам саны:", labelTime: "Уақыты:",
             sendBtn: "ЖІБЕРУ", back: "← Артқа қайту", loginTitle: "Жүргізушіге кіру", loginBtn: "КІРУ",
             namePh: "Есіміңіз", customLabel: "Бағытты жазыңыз:", customPh: "Мысалы: Қорам - Астана",
-            other: "Басқа бағыт", copy: "Көшіру үшін басыңыз"
+            other: "Басқа бағыт", copy: "Көшіру үшін басыңыз", support: "ЖОБА АВТОРЫНА ШӘЙ-ПҰЛ:"
         },
         ru: {
             title: "ТАКСИ АЛМАТЫ-КОРАМ-ШЕЛЕК", passBtn: "Пассажир", driverBtn: "Водитель", orderTitle: "Заказать такси",
             labelRoute: "Выберите маршрут:", labelInfo: "Данные:", labelCount: "Кол-во человек:", labelTime: "Время:",
             sendBtn: "ОТПРАВИТЬ", back: "← Назад", loginTitle: "Вход для водителя", loginBtn: "ВОЙТИ",
             namePh: "Ваше имя", customLabel: "Напишите маршрут:", customPh: "Например: Корам - Астана",
-            other: "Другой маршрут", copy: "Нажмите, чтобы скопировать"
+            other: "Другой маршрут", copy: "Нажмите, чтобы скопировать", support: "ПОДДЕРЖКА АВТОРА ПРОЕКТА:"
         },
         en: {
             title: "ALMATY-QORAM-SHELEK TAXI", passBtn: "Passenger", driverBtn: "Driver", orderTitle: "Book a ride",
             labelRoute: "Select route:", labelInfo: "Details:", labelCount: "Passengers:", labelTime: "Time:",
             sendBtn: "SEND", back: "← Back", loginTitle: "Driver Login", loginBtn: "LOGIN",
             namePh: "Your name", customLabel: "Enter route:", customPh: "Ex: Qoram - Astana",
-            other: "Other route", copy: "Click to copy"
+            other: "Other route", copy: "Click to copy", support: "SUPPORT THE PROJECT AUTHOR:"
         },
         ug: {
             title: "АЛМАТА-ҚОРАМ-ШЕЛЕК ТАКСИСИ", passBtn: "Йолавчи", driverBtn: "Хайдичи", orderTitle: "Тапшуруқ бериш",
             labelRoute: "Йол таллаң:", labelInfo: "Учурлар:", labelCount: "Адәм сани:", labelTime: "Вақти:",
             sendBtn: "ӘВӘТИШ", back: "← Кәйнигә қайтиш", loginTitle: "Хайдичи кириши", loginBtn: "КИРИШ",
             namePh: "Исмиңиз", customLabel: "Йолуңизни йезиң:", customPh: "Мәсилән: Қорам - Астана",
-            other: "Башқа йол", copy: "Көчүрүш үшін бесиң"
+            other: "Башқа йол", copy: "Көчүрүш үшін бесиң", support: "ЙОЛИНИҢ АВТОРИҒА ЧӘЙ-ПУЛ:"
         }
     };
 
@@ -244,6 +245,7 @@
         document.getElementById('custom-route').placeholder = t.customPh;
         document.getElementById('t-other-route').innerText = t.other;
         document.getElementById('copyStatus').innerText = t.copy;
+        document.getElementById('t-support').innerText = t.support;
     }
 
     function show(id) {
@@ -299,7 +301,10 @@
 
     function copyCard() {
         navigator.clipboard.writeText("4400430386921370").then(() => {
-            document.getElementById('copyStatus').innerText = "Көшірілді!";
+            const status = document.getElementById('copyStatus');
+            const original = status.innerText;
+            status.innerText = "Көшірілді! Рахмет!";
+            setTimeout(() => { status.innerText = original; }, 3000);
         });
     }
 </script>
