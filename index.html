@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="kk" class="notranslate">
 <head>
     <meta charset="UTF-8">
@@ -17,6 +18,7 @@
             --dark: #0a0a0a;
             --glass: rgba(255, 255, 255, 0.05);
             --border: rgba(255, 255, 255, 0.1);
+            --wa-green: #25D366;
         }
 
         html, body { width: 100%; height: 100%; margin: 0; padding: 0; background: var(--dark); }
@@ -91,10 +93,14 @@
 
         .order-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px; margin-bottom: 12px; border-left: 3px solid var(--gold); }
         
-        /* Кнопкалардың стилі */
-        .order-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .action-btn { padding: 12px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; font-size: 13px; text-decoration: none; text-align: center; }
-        .wa-btn { background: #25D366; color: white; }
+        .order-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+        .action-btn { 
+            padding: 12px; border-radius: 14px; border: none; font-weight: 600; cursor: pointer; 
+            font-size: 13px; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; 
+            transition: transform 0.2s;
+        }
+        .action-btn:active { transform: scale(0.95); }
+        .wa-btn { background: var(--wa-green); color: white; }
         .call-btn { background: var(--gold); color: black; }
 
         .footer { width: 90%; max-width: 420px; text-align: center; color: #666; font-size: 13px; padding-bottom: 40px; flex-shrink: 0; }
@@ -200,35 +206,19 @@
     const i18n = {
         kk: {
             title: "АЛМАТЫ-ҚОРАМ-ШЕЛЕК ТАКСИ", passBtn: "Жолаушы", driverBtn: "Жүргізуші", orderTitle: "Тапсырыс беру",
-            labelRoute: "Бағытты таңдаңыз:", labelInfo: "Мәліметтер:", labelCount: "Адам саны:", labelTime: "Уақыты:",
-            sendBtn: "ЖІБЕРУ", back: "← Артқа қайту", loginTitle: "Жүргізушіге кіру", loginBtn: "КІРУ",
-            namePh: "Есіміңіз", customLabel: "Бағытты жазыңыз:", customPh: "Мысалы: Қорам - Астана",
-            other: "Басқа бағыт", copy: "Көшіру үшін басыңыз", support: "ЖОБА АВТОРЫНА ШӘЙ-ПҰЛ:",
-            call: "ҚОҢЫРАУ"
+            sendBtn: "ЖІБЕРУ", back: "← Артқа қайту", call: "📞 ҚОҢЫРАУ", support: "ЖОБА АВТОРЫНА ШӘЙ-ПҰЛ:"
         },
         ru: {
             title: "ТАКСИ АЛМАТЫ-КОРАМ-ШЕЛЕК", passBtn: "Пассажир", driverBtn: "Водитель", orderTitle: "Заказать такси",
-            labelRoute: "Выберите маршрут:", labelInfo: "Данные:", labelCount: "Кол-во человек:", labelTime: "Время:",
-            sendBtn: "ОТПРАВИТЬ", back: "← Назад", loginTitle: "Вход для водителя", loginBtn: "ВОЙТИ",
-            namePh: "Ваше имя", customLabel: "Напишите маршрут:", customPh: "Например: Корам - Астана",
-            other: "Другой маршрут", copy: "Нажмите, чтобы скопировать", support: "ПОДДЕРЖКА АВТОРА ПРОЕКТА:",
-            call: "ЗВОНОК"
+            sendBtn: "ОТПРАВИТЬ", back: "← Назад", call: "📞 ЗВОНОК", support: "ПОДДЕРЖКА АВТОРА ПРОЕКТА:"
         },
         en: {
             title: "ALMATY-QORAM-SHELEK TAXI", passBtn: "Passenger", driverBtn: "Driver", orderTitle: "Book a ride",
-            labelRoute: "Select route:", labelInfo: "Details:", labelCount: "Passengers:", labelTime: "Time:",
-            sendBtn: "SEND", back: "← Back", loginTitle: "Driver Login", loginBtn: "LOGIN",
-            namePh: "Your name", customLabel: "Enter route:", customPh: "Ex: Qoram - Astana",
-            other: "Other route", copy: "Click to copy", support: "SUPPORT THE PROJECT AUTHOR:",
-            call: "CALL"
+            sendBtn: "SEND", back: "← Back", call: "📞 CALL", support: "SUPPORT THE PROJECT AUTHOR:"
         },
         ug: {
             title: "АЛМАТА-ҚОРАМ-ШЕЛЕК ТАКСИСИ", passBtn: "Йолавчи", driverBtn: "Хайдичи", orderTitle: "Тапшуруқ бериш",
-            labelRoute: "Йол таллаң:", labelInfo: "Учурлар:", labelCount: "Адәм сани:", labelTime: "Вақти:",
-            sendBtn: "ӘВӘТИШ", back: "← Кәйнигә қайтиш", loginTitle: "Хайдичи кириши", loginBtn: "КИРИШ",
-            namePh: "Исмиңиз", customLabel: "Йолуңизни йезиң:", customPh: "Мәсилән: Қорам - Астана",
-            other: "Башқа йол", copy: "Көчүрүш үшін бесиң", support: "ЙОЛИНИҢ АВТОРИҒА ЧӘЙ-ПУЛ:",
-            call: "ТЕЛЕФОН"
+            sendBtn: "ӘВӘТИШ", back: "← Кәйнигә қайтиш", call: "📞 ТЕЛЕФОН", support: "ЙОЛИНИҢ АВТОРИҒА ЧӘЙ-ПУЛ:"
         }
     };
 
@@ -241,19 +231,8 @@
         document.getElementById('t-pass-btn').innerText = t.passBtn;
         document.getElementById('t-driver-btn').innerText = t.driverBtn;
         document.getElementById('t-order-title').innerText = t.orderTitle;
-        document.getElementById('t-label-route').innerText = t.labelRoute;
-        document.getElementById('t-label-info').innerText = t.labelInfo;
-        document.getElementById('t-label-count').innerText = t.labelCount;
-        document.getElementById('t-label-time').innerText = t.labelTime;
         document.getElementById('t-send-btn').innerText = t.sendBtn;
         document.getElementById('t-back').innerText = t.back;
-        document.getElementById('t-login-title').innerText = t.loginTitle;
-        document.getElementById('t-login-btn').innerText = t.loginBtn;
-        document.getElementById('name').placeholder = t.namePh;
-        document.getElementById('t-custom-label').innerText = t.customLabel;
-        document.getElementById('custom-route').placeholder = t.customPh;
-        document.getElementById('t-other-route').innerText = t.other;
-        document.getElementById('copyStatus').innerText = t.copy;
         document.getElementById('t-support').innerText = t.support;
         if(document.getElementById('screen-driver').classList.contains('active')) load();
     }
@@ -302,17 +281,20 @@
         const list = document.getElementById('orders-list');
         list.innerHTML = "";
         data.forEach(o => {
-            // Сен берген мәтін форматы
             const message = `Сәлеметсіз бе, ${o.name}! \nТапсырысыңыз бойынша:\n📍 Бағыт: ${o.route_from}\n👥 Адам саны: ${o.passengers}\n⏰ Уақыты: ${o.time}\n\nТапсырыс өзекті ме?`;
             const waText = encodeURIComponent(message);
             const cleanPhone = o.phone.replace(/\D/g, '');
 
             list.innerHTML += `
                 <div class="order-card">
-                    <b>${o.route_from}</b><br>${o.name} (${o.passengers} адам)<br>${o.time}<br>
+                    <b>${o.route_from}</b><br>${o.name} (${o.passengers} адам)<br>⏳ ${o.time}
                     <div class="order-actions">
-                        <button class="action-btn call-btn" onclick="window.location.href='tel:${o.phone}'">${i18n[curLang].call}</button>
-                        <a class="action-btn wa-btn" href="https://wa.me/${cleanPhone}?text=${waText}" target="_blank">WHATSAPP</a>
+                        <button class="action-btn call-btn" onclick="window.location.href='tel:${o.phone}'">
+                            ${i18n[curLang].call}
+                        </button>
+                        <a class="action-btn wa-btn" href="https://wa.me/${cleanPhone}?text=${waText}" target="_blank">
+                            💬 WHATSAPP
+                        </a>
                     </div>
                 </div>`;
         });
@@ -321,9 +303,8 @@
     function copyCard() {
         navigator.clipboard.writeText("4400430386921370").then(() => {
             const status = document.getElementById('copyStatus');
-            const original = status.innerText;
             status.innerText = "Көшірілді! Рахмет!";
-            setTimeout(() => { status.innerText = original; }, 3000);
+            setTimeout(() => { status.innerText = "Көшіру үшін нөмірді басыңыз"; }, 3000);
         });
     }
 </script>
