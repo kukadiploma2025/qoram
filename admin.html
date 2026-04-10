@@ -8,7 +8,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Taxi Admin">
-    <link rel="apple-touch-icon" href="logo.png">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -17,9 +16,10 @@
             --gold: #D4AF37;
             --dark: #0a0a0a;
             --card: #161616;
+            --red: #ff6b6b;
+            --green: #2ecc71;
         }
 
-        /* Запрет выделения текста для эффекта приложения */
         * { -webkit-tap-highlight-color: transparent; -webkit-user-select: none; box-sizing: border-box; }
         input { -webkit-user-select: text; }
 
@@ -27,7 +27,7 @@
             font-family: -apple-system, system-ui, sans-serif; 
             background: var(--dark); 
             color: white; 
-            padding: env(safe-area-inset-top) 20px 40px 20px; /* Отступы под челку iPhone */
+            padding: env(safe-area-inset-top) 20px 40px 20px;
             margin: 0; 
             background-image: radial-gradient(circle at top right, #1a1a1a, #0a0a0a);
             min-height: 100vh;
@@ -65,6 +65,7 @@
             cursor: pointer; 
             color: #000; 
             transition: 0.2s;
+            margin-top: 5px;
         }
         button:active { transform: scale(0.98); }
         .item { 
@@ -74,14 +75,20 @@
             padding: 15px 0; 
             border-bottom: 1px solid #222; 
         }
+        .item.disabled { opacity: 0.4; }
+        .action-btns { display: flex; gap: 8px; }
+        .status-btn { 
+            padding: 8px 12px; font-size: 10px; border-radius: 8px; border: none; cursor: pointer; color: white; width: auto;
+        }
         .remove-btn { 
             background: rgba(255, 107, 107, 0.1); 
-            color: #ff6b6b; 
+            color: var(--red); 
             padding: 8px 12px; 
-            font-size: 12px; 
-            border-radius: 10px; 
+            font-size: 10px; 
+            border-radius: 8px; 
             border: none; 
-            cursor: pointer; 
+            cursor: pointer;
+            width: auto;
         }
         .info-label { font-size: 11px; color: #555; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
         .date-label { font-size: 10px; color: #444; margin-top: 4px; }
@@ -104,6 +111,7 @@
         
         <div class="card">
             <div class="info-label">Добавить нового водителя</div>
+            <input type="text" id="new-name" placeholder="Жүргізуші есімі (Мыс: Қуаныш)">
             <input type="tel" id="new-phone" placeholder="87071112233">
             <input type="text" id="new-pin" placeholder="PIN код (4 цифры)" maxlength="4">
             <button onclick="addDriver()">+ Тіркеу</button>
@@ -118,8 +126,8 @@
     </div>
 
 <script>
-    const SB_URL = 'https://jgngutjzewogolzpopqt.supabase.co'.trim();
-    const SB_KEY = 'sb_publishable_kE0YDikrGftHwZXfMovSJw_7aMAIoFU'.trim();
+    const SB_URL = 'https://jgngutjzewogolzpopqt.supabase.co';
+    const SB_KEY = 'sb_publishable_kE0YDikrGftHwZXfMovSJw_7aMAIoFU';
     const db = supabase.createClient(SB_URL, SB_KEY);
 
     function verify() {
@@ -135,14 +143,22 @@
     }
 
     async function addDriver() {
+        const n = document.getElementById('new-name').value.trim();
         const p = document.getElementById('new-phone').value.trim();
-        const n = document.getElementById('new-pin').value.trim();
-        if(!p || !n) return alert("Заполните все поля!");
+        const pin = document.getElementById('new-pin').value.trim();
+        if(!p || !pin || !n) return alert("Барлық жерді толтырыңыз!");
 
-        const { error } = await db.from('drivers').insert([{ phone: p, pin: n }]);
+        const { error } = await db.from('drivers').insert([{ 
+            name: n, 
+            phone: p, 
+            pin: pin, 
+            is_active: true 
+        }]);
+
         if(error) {
-            alert("Ошибка! Проверьте данные.");
+            alert("Ошибка! Мүмкін бұл номер тіркеліп қойған.");
         } else {
+            document.getElementById('new-name').value = '';
             document.getElementById('new-phone').value = '';
             document.getElementById('new-pin').value = '';
             loadDrivers();
@@ -160,26 +176,38 @@
         
         listDiv.innerHTML = data.length ? "" : "Водителей нет";
         data.forEach(item => {
-            // Форматируем дату
             const d = new Date(item.created_at);
             const dateStr = d.toLocaleDateString('ru-RU') + ' ' + d.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
 
             listDiv.innerHTML += `
-                <div class="item">
+                <div class="item ${item.is_active ? '' : 'disabled'}">
                     <div>
-                        <div style="font-weight: bold; color: #D4AF37; font-size: 16px;">${item.phone}</div>
-                        <div style="font-size: 12px; color: #888;">PIN: ${item.pin}</div>
+                        <div style="font-weight: bold; color: #D4AF37; font-size: 16px;">${item.name || 'No Name'}</div>
+                        <div style="font-size: 13px; color: #fff;">${item.phone}</div>
+                        <div style="font-size: 11px; color: #888;">PIN: ${item.pin}</div>
                         <div class="date-label">Добавлен: ${dateStr}</div>
                     </div>
-                    <button class="remove-btn" onclick="deleteDriver('${item.phone}')">Удалить</button>
+                    <div class="action-btns">
+                        <button class="status-btn" style="background: ${item.is_active ? '#444' : '#2ecc71'}" 
+                            onclick="toggleStatus('${item.phone}', ${item.is_active})">
+                            ${item.is_active ? 'Өшіру' : 'Қосу'}
+                        </button>
+                        <button class="remove-btn" onclick="deleteDriver('${item.phone}')">🗑️</button>
+                    </div>
                 </div>`;
         });
     }
 
+    async function toggleStatus(phone, currentStatus) {
+        const { error } = await db.from('drivers').update({ is_active: !currentStatus }).eq('phone', phone);
+        if(error) alert("Қателік орын алды");
+        else loadDrivers();
+    }
+
     async function deleteDriver(phone) {
-        if(!confirm("Удалить доступ для " + phone + "?")) return;
+        if(!confirm("Жүргізушіні базадан өшіру?")) return;
         const { error } = await db.from('drivers').delete().eq('phone', phone);
-        if(error) alert("Ошибка при удалении");
+        if(error) alert("Өшіру мүмкін болмады");
         else loadDrivers();
     }
 
