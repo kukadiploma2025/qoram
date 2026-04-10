@@ -2,8 +2,14 @@
 <html lang="kk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Qoram Taxi | Admin Panel</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Taxi Admin">
+    <link rel="apple-touch-icon" href="logo.png">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
@@ -12,23 +18,31 @@
             --dark: #0a0a0a;
             --card: #161616;
         }
+
+        /* Запрет выделения текста для эффекта приложения */
+        * { -webkit-tap-highlight-color: transparent; -webkit-user-select: none; box-sizing: border-box; }
+        input { -webkit-user-select: text; }
+
         body { 
             font-family: -apple-system, system-ui, sans-serif; 
             background: var(--dark); 
             color: white; 
-            padding: 20px; 
+            padding: env(safe-area-inset-top) 20px 40px 20px; /* Отступы под челку iPhone */
             margin: 0; 
+            background-image: radial-gradient(circle at top right, #1a1a1a, #0a0a0a);
+            min-height: 100vh;
         }
         .wrapper { max-width: 500px; margin: 40px auto; padding: 20px; }
         .card { 
             background: var(--card); 
             padding: 25px; 
-            border-radius: 20px; 
+            border-radius: 24px; 
             border: 1px solid #222; 
             margin-bottom: 20px; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            backdrop-filter: blur(10px);
         }
-        h2 { color: var(--gold); font-size: 18px; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; }
+        h2 { color: var(--gold); font-size: 18px; text-transform: uppercase; letter-spacing: 1px; margin-top: 0; text-align: center; }
         input { 
             width: 100%; 
             padding: 15px; 
@@ -37,7 +51,6 @@
             border: 1px solid #333; 
             color: white; 
             border-radius: 12px; 
-            box-sizing: border-box; 
             font-size: 16px; 
             outline: none; 
         }
@@ -62,23 +75,25 @@
             border-bottom: 1px solid #222; 
         }
         .remove-btn { 
-            background: #3d1010; 
+            background: rgba(255, 107, 107, 0.1); 
             color: #ff6b6b; 
-            padding: 8px 15px; 
+            padding: 8px 12px; 
             font-size: 12px; 
-            border-radius: 8px; 
+            border-radius: 10px; 
             border: none; 
             cursor: pointer; 
         }
-        .info-label { font-size: 11px; color: #555; text-transform: uppercase; margin-bottom: 5px; }
+        .info-label { font-size: 11px; color: #555; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px; }
+        .date-label { font-size: 10px; color: #444; margin-top: 4px; }
     </style>
 </head>
 <body>
 
     <div id="gate" class="wrapper">
         <div class="card" style="text-align: center;">
+            <div style="font-size: 40px; margin-bottom: 10px;">🔑</div>
             <h2>Admin Access</h2>
-            <p style="color: #666; font-size: 14px;">Введите пароль для управления базой</p>
+            <p style="color: #666; font-size: 14px;">Введите пароль</p>
             <input type="password" id="pass-input" placeholder="Пароль">
             <button onclick="verify()">Connect</button>
         </div>
@@ -99,21 +114,16 @@
             <div id="drivers-list">Загрузка...</div>
         </div>
         
-        <button onclick="location.reload()" style="background: #222; color: #666; margin-top: 10px;">Выйти</button>
+        <button onclick="location.reload()" style="background: transparent; color: #444; border: 1px solid #222;">Выйти из системы</button>
     </div>
 
 <script>
-    // 1. НАСТРОЙКИ SUPABASE (ТВОИ ДАННЫЕ)
     const SB_URL = 'https://jgngutjzewogolzpopqt.supabase.co'.trim();
     const SB_KEY = 'sb_publishable_kE0YDikrGftHwZXfMovSJw_7aMAIoFU'.trim();
-    
     const db = supabase.createClient(SB_URL, SB_KEY);
 
-    // 2. ПРОВЕРКА ПАРОЛЯ
     function verify() {
         const input = document.getElementById('pass-input').value.trim();
-        
-        // Пароль: kuka2005
         if(input === "kuka2005") {
             document.getElementById('gate').style.display = 'none';
             document.getElementById('main-view').style.display = 'block';
@@ -124,17 +134,14 @@
         }
     }
 
-    // 3. ДОБАВЛЕНИЕ ВОДИТЕЛЯ
     async function addDriver() {
         const p = document.getElementById('new-phone').value.trim();
         const n = document.getElementById('new-pin').value.trim();
-        
         if(!p || !n) return alert("Заполните все поля!");
 
         const { error } = await db.from('drivers').insert([{ phone: p, pin: n }]);
-        
         if(error) {
-            alert("Ошибка! Возможно, этот номер уже есть в базе.");
+            alert("Ошибка! Проверьте данные.");
         } else {
             document.getElementById('new-phone').value = '';
             document.getElementById('new-pin').value = '';
@@ -142,30 +149,33 @@
         }
     }
 
-    // 4. ЗАГРУЗКА СПИСКА ИЗ БАЗЫ
     async function loadDrivers() {
         const listDiv = document.getElementById('drivers-list');
         const { data, error } = await db.from('drivers').select('*').order('created_at', { ascending: false });
         
         if(error) {
-            listDiv.innerHTML = "Ошибка загрузки: " + error.message;
+            listDiv.innerHTML = "Ошибка: " + error.message;
             return;
         }
         
         listDiv.innerHTML = data.length ? "" : "Водителей нет";
         data.forEach(item => {
+            // Форматируем дату
+            const d = new Date(item.created_at);
+            const dateStr = d.toLocaleDateString('ru-RU') + ' ' + d.toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
+
             listDiv.innerHTML += `
                 <div class="item">
                     <div>
-                        <div style="font-weight: bold; color: #D4AF37;">${item.phone}</div>
-                        <div style="font-size: 12px; color: #555;">PIN: ${item.pin}</div>
+                        <div style="font-weight: bold; color: #D4AF37; font-size: 16px;">${item.phone}</div>
+                        <div style="font-size: 12px; color: #888;">PIN: ${item.pin}</div>
+                        <div class="date-label">Добавлен: ${dateStr}</div>
                     </div>
                     <button class="remove-btn" onclick="deleteDriver('${item.phone}')">Удалить</button>
                 </div>`;
         });
     }
 
-    // 5. УДАЛЕНИЕ ВОДИТЕЛЯ
     async function deleteDriver(phone) {
         if(!confirm("Удалить доступ для " + phone + "?")) return;
         const { error } = await db.from('drivers').delete().eq('phone', phone);
@@ -173,7 +183,6 @@
         else loadDrivers();
     }
 
-    // ВХОД ПО ENTER
     document.getElementById('pass-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') verify();
     });
