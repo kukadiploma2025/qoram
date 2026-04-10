@@ -29,54 +29,61 @@
             align-items: center; 
             justify-content: center;
             background-image: radial-gradient(circle at top right, #1a1a1a, #0a0a0a);
-            padding-top: env(safe-area-inset-top);
         }
 
         .lang-picker {
             position: absolute;
-            top: 30px;
+            top: 40px;
             display: flex; gap: 15px; background: var(--glass);
             padding: 10px 20px; border-radius: 20px; border: 1px solid var(--border);
             z-index: 10;
         }
-        .lang-btn { cursor: pointer; opacity: 0.5; transition: 0.3s; font-size: 14px; font-weight: 600; }
+        .lang-btn { cursor: pointer; opacity: 0.4; transition: 0.3s; font-size: 14px; font-weight: 600; }
         .lang-btn.active { opacity: 1; color: var(--gold); transform: scale(1.1); }
 
         .container { 
-            width: 85%; max-width: 380px; padding: 30px; background: var(--glass);
+            width: 85%; max-width: 380px; padding: 40px 30px; background: var(--glass);
             backdrop-filter: blur(15px); border-radius: 32px; border: 1px solid var(--border);
             text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
         }
 
         .logo-wrapper {
-            width: 80px; height: 80px; margin: 0 auto 25px auto;
-            background: #000; border-radius: 22px; padding: 8px;
+            width: 85px; height: 85px; margin: 0 auto 30px auto;
+            background: #000; border-radius: 24px; padding: 8px;
             border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
         }
-        .main-logo { width: 100%; height: auto; border-radius: 12px; }
+        .main-logo { width: 100%; height: auto; border-radius: 14px; }
 
-        .maintenance-icon { font-size: 45px; margin-bottom: 20px; display: block; animation: pulse 2s infinite; }
+        .maintenance-icon { font-size: 45px; margin-bottom: 25px; display: block; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
 
-        h2 { font-weight: 400; letter-spacing: 1px; color: var(--gold); margin-bottom: 15px; text-transform: uppercase; font-size: 1.2rem; }
-        p { font-size: 14px; color: #aaa; line-height: 1.6; margin-bottom: 25px; min-height: 4.8em; }
+        h2 { font-weight: 600; letter-spacing: 1px; color: var(--gold); margin-bottom: 20px; text-transform: uppercase; font-size: 1.1rem; }
+        
+        /* Мәтін арасын ашу */
+        p { font-size: 15px; color: #ccc; line-height: 1.7; margin-bottom: 35px; min-height: 5em; }
         
         .admin-link {
-            display: inline-block; padding: 12px 25px; border: 1px solid var(--gold);
-            color: var(--gold); text-decoration: none; border-radius: 12px;
+            display: inline-block; padding: 14px 30px; border: 1px solid var(--gold);
+            color: var(--gold); text-decoration: none; border-radius: 16px;
             font-size: 14px; font-weight: 600; transition: 0.3s;
+            margin-bottom: 10px;
         }
-        .admin-link:active { background: var(--gold); color: black; }
+        .admin-link:active { background: var(--gold); color: black; transform: scale(0.95); }
 
         .footer { 
-            position: absolute; bottom: 30px; width: 90%; max-width: 400px; 
-            text-align: center; color: #666; font-size: 12px; 
+            position: absolute; bottom: 40px; width: 90%; max-width: 400px; 
+            text-align: center; color: #555; font-size: 13px; 
         }
+        
+        .copyright { margin-bottom: 25px; display: block; letter-spacing: 0.5px; }
+
         .donation-box { 
-            margin-top: 15px; padding: 15px; background: rgba(212, 175, 55, 0.03); 
-            border-radius: 16px; border: 1px dashed rgba(212, 175, 55, 0.3); 
+            padding: 20px; background: rgba(212, 175, 55, 0.03); 
+            border-radius: 20px; border: 1px dashed rgba(212, 175, 55, 0.2); 
         }
-        .card-number { display: block; font-size: 16px; color: #999; margin: 5px 0; font-family: monospace; letter-spacing: 1px; cursor: pointer; }
+        .card-number { display: block; font-size: 17px; color: #888; margin: 8px 0; font-family: monospace; letter-spacing: 2px; cursor: pointer; }
+        .copy-hint { font-size: 10px; text-transform: uppercase; opacity: 0.8; }
     </style>
 </head>
 <body>
@@ -99,11 +106,11 @@
 </div>
 
 <div class="footer">
-    <p>© Тлепберген Қуаныш, 2026</p>
+    <span class="copyright">© Тлепберген Қуаныш, 2026</span>
     <div class="donation-box">
-        <span id="t-support" style="font-size: 10px; color: var(--gold); letter-spacing: 1px;">ЖОБА АВТОРЫНА ҚОЛДАУ:</span>
+        <span id="t-support" style="font-size: 10px; color: var(--gold); font-weight: 600;">ЖОБА АВТОРЫНА ҚОЛДАУ:</span>
         <span class="card-number" onclick="copyCard()">4400 4303 8692 1370</span>
-        <span id="copyStatus" style="font-size: 10px;">Көшіру үшін нөмірді басыңыз</span>
+        <span id="copyStatus" class="copy-hint">Көшіру үшін нөмірді басыңыз</span>
     </div>
 </div>
 
@@ -143,7 +150,10 @@
         }
     };
 
+    let currentLang = 'kk';
+
     function setLang(lang, el) {
+        currentLang = lang;
         document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
         const t = i18n[lang];
@@ -152,18 +162,16 @@
         document.getElementById('t-admin').innerText = t.admin;
         document.getElementById('t-support').innerText = t.support;
         document.getElementById('copyStatus').innerText = t.copy;
-        window.currentLang = lang;
     }
 
     function copyCard() {
         navigator.clipboard.writeText("4400430386921370").then(() => {
-            const lang = window.currentLang || 'kk';
             const status = document.getElementById('copyStatus');
-            status.innerText = i18n[lang].copied;
+            status.innerText = i18n[currentLang].copied;
             status.style.color = "#D4AF37";
             setTimeout(() => { 
-                status.innerText = i18n[lang].copy; 
-                status.style.color = "#666";
+                status.innerText = i18n[currentLang].copy; 
+                status.style.color = "#555";
             }, 3000);
         });
     }
