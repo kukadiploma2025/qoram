@@ -8,7 +8,6 @@
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Taxi">
     <link rel="apple-touch-icon" href="logo.png">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -21,109 +20,63 @@
             --border: rgba(255, 255, 255, 0.1);
         }
 
-        html, body { 
-            position: fixed;
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            touch-action: pan-y; 
-        }
-
         body { 
             font-family: 'Inter', sans-serif; 
             background: var(--dark); 
             color: white; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
+            margin: 0;
+            padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0; /* iPhone үшін маңызды */
             background-image: radial-gradient(circle at top right, #1a1a1a, #0a0a0a);
-            overflow-y: auto; 
-            -webkit-overflow-scrolling: touch;
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        /* Личный кабинет картасының стилі */
-        .driver-card {
-            background: linear-gradient(145deg, #1a1a1a, #111);
-            border: 1px solid var(--gold);
-            padding: 15px;
-            border-radius: 20px;
-            text-align: left;
-            margin-bottom: 20px;
-        }
-
+        /* Тіл таңдау - iPhone челкасына тимейді */
         .lang-picker {
-            margin-top: 20px;
-            display: flex; gap: 10px; background: var(--glass);
-            padding: 8px 15px; border-radius: 20px; border: 1px solid var(--border);
-            z-index: 10; flex-shrink: 0;
+            margin: 20px 0;
+            display: flex; gap: 15px; background: var(--glass);
+            padding: 12px 20px; border-radius: 25px; border: 1px solid var(--border);
+            z-index: 100;
         }
-        .lang-btn { cursor: pointer; opacity: 0.5; transition: 0.3s; font-size: 14px; font-weight: 600; }
+        .lang-btn { cursor: pointer; opacity: 0.5; transition: 0.3s; font-size: 16px; font-weight: 700; padding: 5px 10px; }
         .lang-btn.active { opacity: 1; color: var(--gold); transform: scale(1.1); }
 
         .container { 
-            width: 90%; max-width: 420px; padding: 25px; background: var(--glass);
+            width: 92%; max-width: 420px; padding: 25px; background: var(--glass);
             backdrop-filter: blur(15px); border-radius: 28px; border: 1px solid var(--border);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6); text-align: center; margin: 20px 0;
-            flex-shrink: 0;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6); text-align: center;
         }
 
-        .logo-wrapper {
-            width: 90px; height: 90px; margin: 0 auto 20px auto;
-            background: #000; border-radius: 22px; padding: 8px;
-            border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
-        }
+        .logo-wrapper { width: 80px; height: 80px; margin: 0 auto 15px auto; background: #000; border-radius: 20px; padding: 5px; border: 1px solid var(--border); }
         .main-logo { width: 100%; height: auto; border-radius: 12px; }
 
-        h2 { font-weight: 300; letter-spacing: 1px; color: var(--gold); margin-bottom: 25px; text-transform: uppercase; font-size: 1.1rem; }
+        .section { display: none; }
+        .section.active { display: block; }
         
-        .main-btn { 
-            width: 100%; padding: 18px; margin: 10px 0; border-radius: 14px; border: none; 
-            font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s;
-        }
+        .main-btn { width: 100%; padding: 18px; margin: 10px 0; border-radius: 14px; border: none; font-size: 16px; font-weight: 600; cursor: pointer; }
         .btn-gold { background: var(--gold); color: black; }
         .btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
 
-        .section { display: none; text-align: left; }
-        .section.active { display: block; }
-        .label { font-size: 10px; color: #777; text-transform: uppercase; margin: 15px 0 8px 5px; display: block; letter-spacing: 1px; }
-        
-        input { 
-            width: 100%; padding: 14px; background: rgba(255,255,255,0.03); 
-            border: 1px solid var(--border); border-radius: 12px; color: white; 
-            font-size: 16px; box-sizing: border-box; outline: none; margin-bottom: 10px;
+        input { width: 100%; padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; color: white; margin-bottom: 10px; outline: none; }
+
+        /* Свайп дизайны */
+        .order-wrapper { position: relative; overflow: hidden; margin-bottom: 12px; border-radius: 16px; transition: transform 0.3s ease; }
+        .order-card { 
+            background: #161616; padding: 15px; position: relative; z-index: 2;
+            border-left: 4px solid var(--gold); transition: transform 0.3s;
+        }
+        .delete-bg {
+            position: absolute; right: 0; top: 0; bottom: 0; width: 100%;
+            background: #ff4757; display: flex; align-items: center; justify-content: flex-end;
+            padding-right: 20px; color: white; font-weight: bold; z-index: 1; border-radius: 16px;
         }
 
-        .route-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .route-item { 
-            background: rgba(255,255,255,0.04); padding: 10px; border-radius: 10px; 
-            text-align: center; cursor: pointer; border: 1px solid transparent; font-size: 12px;
-        }
-        .route-item.active { border-color: var(--gold); background: rgba(212, 175, 55, 0.1); color: var(--gold); }
+        /* Обновить батырмасы */
+        .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .refresh-btn { background: none; border: none; color: var(--gold); font-size: 20px; cursor: pointer; transition: 0.5s; }
+        .refresh-btn.rotating { transform: rotate(360deg); }
 
-        .pass-selector { display: flex; justify-content: space-between; }
-        .pass-btn { 
-            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; 
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 50%; cursor: pointer;
-        }
-        .pass-btn.active { background: var(--gold); color: black; }
-
-        .order-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px; margin-bottom: 12px; border-left: 3px solid var(--gold); }
-
-        .help-box { margin-top: 25px; padding: 15px; background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px solid #222; text-align: center; }
-        .help-title { font-size: 11px; color: #555; text-transform: uppercase; margin-bottom: 10px; display: block; }
-        .help-btns { display: flex; gap: 10px; }
-        .help-link { flex: 1; padding: 10px; border-radius: 10px; text-decoration: none; font-size: 12px; font-weight: 600; display: block; text-align: center; }
-        .btn-wa { background: #25D366; color: white; }
-        .btn-call { background: #333; color: var(--gold); border: 1px solid var(--gold); }
-        
-        .footer { width: 90%; max-width: 420px; text-align: center; color: #666; font-size: 13px; padding-bottom: 40px; flex-shrink: 0; }
-        .insta-link { display: inline-block; margin: 10px 0; color: var(--gold); text-decoration: none; font-weight: 600; }
-        .donation-box { margin-top: 15px; padding: 15px; background: rgba(212, 175, 55, 0.05); border-radius: 16px; border: 1px dashed var(--gold); }
-        .card-number { display: block; font-size: 16px; color: white; margin: 8px 0; font-family: monospace; letter-spacing: 1px; cursor: pointer; }
-        .copy-hint { font-size: 10px; color: var(--gold); text-transform: uppercase; }
-        .back-link { display: block; text-align: center; margin-top: 20px; color: #555; font-size: 13px; cursor: pointer; }
+        .footer { padding: 30px 0; text-align: center; color: #555; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -132,92 +85,50 @@
     <div class="lang-btn active" onclick="setLang('kk', this)">КЗ</div>
     <div class="lang-btn" onclick="setLang('ru', this)">РУ</div>
     <div class="lang-btn" onclick="setLang('en', this)">EN</div>
-    <div class="lang-btn" onclick="setLang('ug', this)">УЙҒ</div>
 </div>
 
 <div class="container">
-    <div class="logo-wrapper">
-        <img src="logo.png" alt="TAXI" class="main-logo">
-    </div>
-
     <div id="screen-main" class="section active">
-        <h2 id="t-title" translate="no">АЛМАТЫ-ҚОРАМ-ШЕЛЕК ТАКСИ</h2>
-        <button class="main-btn btn-gold" id="t-pass-btn" onclick="show('screen-passenger')">Жолаушы</button>
-        <button class="main-btn btn-outline" id="t-driver-btn" onclick="show('screen-login')">Жүргізуші</button>
+        <div class="logo-wrapper"><img src="logo.png" class="main-logo"></div>
+        <h2 id="t-title">ҚОРАМ-ШЕЛЕК ТАКСИ</h2>
+        <button class="main-btn btn-gold" onclick="show('screen-passenger')">Жолаушы</button>
+        <button class="main-btn btn-outline" onclick="show('screen-login')">Жүргізуші</button>
     </div>
 
     <div id="screen-passenger" class="section">
-        <h2 id="t-order-title" style="font-size: 18px;">Тапсырыс беру</h2>
-        <span class="label" id="t-label-route">Бағытты таңдаңыз:</span>
-        <div class="route-grid" translate="no">
-            <div class="route-item active" onclick="setR('Алматы - Қорам', this)">Алматы - Қорам</div>
-            <div class="route-item" onclick="setR('Қорам - Алматы', this)">Қорам - Алматы</div>
-            <div class="route-item" onclick="setR('Алматы - Шелек', this)">Алматы - Шелек</div>
-            <div class="route-item" onclick="setR('Шелек - Алматы', this)">Шелек - Алматы</div>
-            <div class="route-item" onclick="setR('Қорам - Шелек', this)">Қорам - Шелек</div>
-            <div class="route-item" onclick="setR('Шелек - Қорам', this)">Шелек - Қорам</div>
-        </div>
-        <span class="label" id="t-label-info">Мәліметтер:</span>
+        <h3 id="t-order-title">Тапсырыс беру</h3>
         <input type="text" id="name" placeholder="Есіміңіз">
-        <input type="tel" id="phone" placeholder="8 7XX XXX XX XX">
-        <span class="label" id="t-label-count">Адам саны:</span>
-        <div class="pass-selector">
-            <div class="pass-btn active" onclick="setP(1, this)">1</div>
-            <div class="pass-btn" onclick="setP(2, this)">2</div>
-            <div class="pass-btn" onclick="setP(3, this)">3</div>
-            <div class="pass-btn" onclick="setP(4, this)">4</div>
-            <div class="pass-btn" onclick="setP(5, this)">5</div>
-            <div class="pass-btn" onclick="setP(6, this)">6</div>
-        </div>
-        <span class="label" id="t-label-time">Уақыты:</span>
+        <input type="tel" id="phone" placeholder="87071112233">
         <input type="time" id="time" value="12:00">
-        <button class="main-btn btn-gold" id="t-send-btn" onclick="send()">ЖІБЕРУ</button>
-        <span class="back-link" id="t-back" onclick="show('screen-main')">← Артқа қайту</span>
+        <button class="main-btn btn-gold" onclick="send()">ЖІБЕРУ</button>
+        <p onclick="show('screen-main')" style="cursor:pointer; color:#555">← Артқа</p>
     </div>
 
     <div id="screen-login" class="section">
-        <h2 id="t-login-title" style="font-size: 18px;">Жүргізушіге кіру</h2>
-        <span class="label" id="t-label-login">Номеріңіз:</span>
-        <input type="tel" id="d-phone" placeholder="8 7XX XXX XX XX">
-        <span class="label" id="t-label-pin">PIN код:</span>
-        <input type="password" id="d-pin" placeholder="****" maxlength="4">
-        <button class="main-btn btn-gold" id="t-login-btn" onclick="login()">КІРУ</button>
-        
-        <div class="help-box">
-            <span class="help-title" id="t-help-text">Көмек керек пе немесе пароль ұмыттыңыз ба?</span>
-            <div class="help-btns">
-                <a href="https://wa.me/+77479416498" class="help-link btn-wa">WhatsApp</a>
-                <a href="tel:+77479416498" class="help-link btn-call">📞 Қоңырау</a>
-            </div>
-        </div>
-        <span class="back-link" id="t-back-login" onclick="show('screen-main')">← Артқа қайту</span>
+        <h3>Кіру</h3>
+        <input type="tel" id="d-phone" placeholder="Номер">
+        <input type="password" id="d-pin" placeholder="PIN" maxlength="4">
+        <button class="main-btn btn-gold" onclick="login()">КІРУ</button>
+        <p onclick="show('screen-main')" style="cursor:pointer; color:#555">← Артқа</p>
     </div>
 
     <div id="screen-driver" class="section">
-        <div class="driver-card">
-            <div id="welcome-msg" style="font-weight: 600; font-size: 16px; color: var(--gold);">Қош келдіңіз!</div>
-            <div id="weather-info" style="font-size: 11px; color: #777; margin-top: 5px;">📍 Алматы | Ауа райы жүктелуде...</div>
-            <div style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 10px; color: #25D366; font-weight: bold;">● ЖАЗЫЛЫМ БЕЛСЕНДІ</span>
-                <span style="font-size: 11px; color: #555; cursor: pointer;" onclick="location.reload()">Шығу</span>
-            </div>
+        <div id="welcome-card" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; text-align: left; margin-bottom: 20px;">
+            <div id="welcome-msg" style="color: var(--gold); font-weight: bold;">Сәлем!</div>
+            <div id="weather-info" style="font-size: 11px; color: #888; margin-top: 5px;">📍 Локация анықталуда...</div>
         </div>
 
-        <h2 id="t-list-title" style="font-size: 18px; margin-bottom: 15px;">Тапсырыстар</h2>
-        <div id="orders-list">...</div>
-        <span class="back-link" id="t-back-driver" onclick="show('screen-main')">← Артқа қайту</span>
+        <div class="list-header">
+            <h3 id="t-list-title" style="margin:0">Тапсырыстар</h3>
+            <button class="refresh-btn" id="refreshBtn" onclick="refreshData()">🔄</button>
+        </div>
+        <div id="orders-list"></div>
+        <p onclick="location.reload()" style="cursor:pointer; color:#555; margin-top:20px;">← Шығу</p>
     </div>
 </div>
 
 <div class="footer">
     <p>© Тлепберген Қуаныш, 2026</p>
-    <p>Астана қаласы | <span translate="no">Руы: Албан</span> (<span translate="no">Қорам</span> ауылы)</p>
-    <a href="https://instagram.com/kukandrio" target="_blank" class="insta-link">📸 Instagram: @kukandrio</a>
-    <div class="donation-box">
-        <span class="label" style="margin:0; color:var(--gold);">Жобаны қолдау (Шай-пұл):</span>
-        <span class="card-number" id="cardNumber" onclick="copyCard()">4400 4303 8692 1370</span>
-        <span class="copy-hint" id="copyStatus">Көшіру үшін нөмірді басыңыз</span>
-    </div>
 </div>
 
 <script>
@@ -225,162 +136,111 @@
     const SUPABASE_KEY = 'sb_publishable_kE0YDikrGftHwZXfMovSJw_7aMAIoFU';
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const translations = {
-        kk: {
-            title: "АЛМАТЫ-ҚОРАМ-ШЕЛЕК ТАКСИ", passBtn: "Жолаушы", driverBtn: "Жүргізуші",
-            orderTitle: "Тапсырыс беру", labelRoute: "Бағытты таңдаңыз:",
-            labelInfo: "Мәліметтер:", namePh: "Есіміңіз", labelCount: "Адам саны:",
-            labelTime: "Уақыты:", sendBtn: "ЖІБЕРУ", back: "← Артқа қайту",
-            listTitle: "Белсенді тапсырыстар", empty: "Тапсырыстар жоқ", call: "ҚОҢЫРАУ ШАЛУ",
-            loginTitle: "Жүргізушіге кіру", loginBtn: "КІРУ", errLogin: "Қате немесе подписка төленбеген!",
-            help: "Көмек керек пе немесе пароль ұмыттыңыз ба?"
-        },
-        ru: {
-            title: "ТАКСИ АЛМАТЫ-КОРАМ-ШЕЛЕК", passBtn: "Пассажир", driverBtn: "Водитель",
-            orderTitle: "Заказать такси", labelRoute: "Выберите маршрут:",
-            labelInfo: "Ваши данные:", namePh: "Ваше имя", labelCount: "Кол-во человек:",
-            labelTime: "Время:", sendBtn: "ОТПРАВИТЬ", back: "← Назад",
-            listTitle: "Список заказов", empty: "Заказов пока нет", call: "ПОЗВОНИТЬ",
-            loginTitle: "Вход для водителя", loginBtn: "ВОЙТИ", errLogin: "Ошибка или подписка не оплачена!",
-            help: "Нужна помощь или забыли пароль?"
-        }
-        // EN және UG аудармалары осында жалғасады...
-    };
-
-    let curLang = 'kk';
-    let route = "Алматы - Қорам";
-    let passengers = 1;
-    let curDriver = null;
-
-    function setLang(lang, el) {
-        curLang = lang;
-        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-        const t = translations[lang] || translations.kk;
-        document.getElementById('t-title').innerText = t.title;
-        document.getElementById('t-pass-btn').innerText = t.passBtn;
-        document.getElementById('t-driver-btn').innerText = t.driverBtn;
-        document.getElementById('t-order-title').innerText = t.orderTitle;
-        document.getElementById('t-label-route').innerText = t.labelRoute;
-        document.getElementById('t-label-info').innerText = t.labelInfo;
-        document.getElementById('name').placeholder = t.namePh;
-        document.getElementById('t-label-count').innerText = t.labelCount;
-        document.getElementById('t-label-time').innerText = t.labelTime;
-        document.getElementById('t-send-btn').innerText = t.sendBtn;
-        document.getElementById('t-back').innerText = t.back;
-        document.getElementById('t-back-driver').innerText = t.back;
-        document.getElementById('t-back-login').innerText = t.back;
-        document.getElementById('t-list-title').innerText = t.listTitle;
-        document.getElementById('t-login-title').innerText = t.loginTitle;
-        document.getElementById('t-login-btn').innerText = t.loginBtn;
-        document.getElementById('t-help-text').innerText = t.help;
-    }
+    let startX = 0;
+    let deletedOrders = JSON.parse(localStorage.getItem('deleted_orders') || '[]');
 
     function show(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
     }
 
-    function setR(val, el) {
-        route = val;
-        document.querySelectorAll('.route-item').forEach(i => i.classList.remove('active'));
-        el.classList.add('active');
-    }
-
-    function setP(val, el) {
-        passengers = val;
-        document.querySelectorAll('.pass-btn').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-    }
-
     async function login() {
-        const phone = document.getElementById('d-phone').value.trim();
-        const pin = document.getElementById('d-pin').value.trim();
-        const t = translations[curLang] || translations.kk;
-
-        // БЛОКИРОВКА ЖӘНЕ ЛОГИН ТЕКСЕРУ
-        const { data, error } = await client
-            .from('drivers')
-            .select('*')
-            .eq('phone', phone)
-            .eq('pin', pin)
-            .eq('is_active', true) // Тек активтілер кіре алады
-            .single();
-
+        const p = document.getElementById('d-phone').value;
+        const pin = document.getElementById('d-pin').value;
+        const { data } = await client.from('drivers').select('*').eq('phone', p).eq('pin', pin).eq('is_active', true).single();
         if (data) {
-            curDriver = data;
+            document.getElementById('welcome-msg').innerText = `Сәлем, ${data.name}!`;
             show('screen-driver');
-            initDashboard();
-            load();
-        } else {
-            alert(t.errLogin);
-        }
+            getWeather();
+            refreshData();
+        } else alert("Қате!");
     }
 
-    async function initDashboard() {
-        // Имя приветствие
-        document.getElementById('welcome-msg').innerText = `Сәлем, ${curDriver.name || 'Жүргізуші'}!`;
+    // ЛОКАЦИЯ БОЙЫНША АУА РАЙЫ
+    function getWeather() {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            const { latitude, longitude } = pos.coords;
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
+                const w = await res.json();
+                document.getElementById('weather-info').innerText = `📍 Сіздің маңыңызда: ${Math.round(w.current_weather.temperature)}°C | Сәтті сапар!`;
+            } catch { document.getElementById('weather-info').innerText = "📍 Ауа райы белгісіз"; }
+        }, () => {
+            document.getElementById('weather-info').innerText = "📍 Геолокация өшірулі";
+        });
+    }
+
+    async function refreshData() {
+        const btn = document.getElementById('refreshBtn');
+        btn.classList.add('rotating');
+        await loadOrders();
+        setTimeout(() => btn.classList.remove('rotating'), 500);
+    }
+
+    async function loadOrders() {
+        const { data } = await client.from('orders').select('*').order('created_at', { ascending: false }).limit(20);
+        const list = document.getElementById('orders-list');
+        list.innerHTML = "";
         
-        // Погода API
-        try {
-            const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=43.2389&longitude=76.8897&current_weather=true');
-            const w = await res.json();
-            const temp = Math.round(w.current_weather.temperature);
-            document.getElementById('weather-info').innerText = `📍 Алматы | 🌡️ ${temp}°C | Сапарыңыз сәтті болсын!`;
-        } catch(e) {
-            document.getElementById('weather-info').innerText = `📍 Алматы | Сәтті сапар!`;
-        }
+        data.forEach(o => {
+            if (deletedOrders.includes(o.id)) return;
+
+            const card = document.createElement('div');
+            card.className = 'order-wrapper';
+            card.innerHTML = `
+                <div class="delete-bg">Өшіру</div>
+                <div class="order-card" id="card-${o.id}" 
+                    touchstart="handleStart(event)" 
+                    touchmove="handleMove(event, '${o.id}')" 
+                    touchend="handleEnd(event, '${o.id}')">
+                    <div style="font-size:14px; font-weight:bold">${o.name} (${o.passengers} адам)</div>
+                    <div style="font-size:12px; color:#888">${o.route_from} | ${o.time}</div>
+                    <div style="margin-top:10px; display:flex; gap:5px;">
+                        <button onclick="window.location.href='tel:${o.phone}'" style="flex:1; background:var(--gold); border:none; padding:8px; border-radius:8px; font-size:12px; font-weight:bold">Қоңырау</button>
+                    </div>
+                </div>
+            `;
+            
+            // Свайп оқиғаларын тіркеу
+            const cardEl = card.querySelector('.order-card');
+            cardEl.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+            cardEl.addEventListener('touchmove', e => {
+                let diff = startX - e.touches[0].clientX;
+                if (diff > 0) cardEl.style.transform = `translateX(-${diff}px)`;
+            });
+            cardEl.addEventListener('touchend', e => {
+                let diff = startX - e.changedTouches[0].clientX;
+                if (diff > 100) {
+                    hideOrder(o.id);
+                } else {
+                    cardEl.style.transform = `translateX(0)`;
+                }
+            });
+
+            list.appendChild(card);
+        });
+    }
+
+    function hideOrder(id) {
+        deletedOrders.push(id);
+        localStorage.setItem('deleted_orders', JSON.stringify(deletedOrders));
+        refreshData();
     }
 
     async function send() {
         const n = document.getElementById('name').value;
         const p = document.getElementById('phone').value;
         const t = document.getElementById('time').value;
-        if(!n || !p || !t) return alert("Толтырыңыз!");
-        const { error } = await client.from('orders').insert([{ name: n, route_from: route, passengers, time: t, phone: p }]);
-        if (error) alert(error.message);
-        else { alert("Сәтті! Тапсырыс қабылданды."); location.reload(); }
+        if(!n || !p) return alert("Толтырыңыз!");
+        await client.from('orders').insert([{ name: n, phone: p, time: t, route_from: 'Алматы-Қорам' }]);
+        alert("Жіберілді!");
+        location.reload();
     }
 
-    async function load() {
-        const timeLimit = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();
-        const { data } = await client.from('orders').select('*').gt('created_at', timeLimit).order('created_at', { ascending: false });
-        const list = document.getElementById('orders-list');
-        const t = translations[curLang] || translations.kk;
-        list.innerHTML = data && data.length ? "" : t.empty;
-        
-        if(data) {
-            data.forEach(o => {
-                const cleanPhone = o.phone.replace(/\D/g, '');
-                const message = `Сәлеметсіз бе, ${o.name}! \nТапсырысыңыз бойынша:\n📍 Бағыт: ${o.route_from}\n👥 Адам саны: ${o.passengers}\n⏰ Уақыты: ${o.time}\n\nТапсырыс өзекті ме?`;
-                const waText = encodeURIComponent(message);
-
-                list.innerHTML += `
-                    <div class="order-card">
-                        <div translate="no" style="color:var(--gold); font-size:12px; font-weight:600;">${o.route_from}</div>
-                        <div style="margin:5px 0; font-size:16px;"><b>${o.name}</b> — ${o.passengers} адам</div>
-                        <div style="color:#666; font-size:13px;">Уақыты: ${o.time}</div>
-                        <div style="display: flex; gap: 8px; margin-top: 12px;">
-                            <button class="main-btn btn-gold" style="padding:12px; font-size:12px; margin:0; flex: 1;" onclick="window.location.href='tel:${o.phone}'">📞 ҚОҢЫРАУ</button>
-                            <button class="main-btn" style="padding:12px; font-size:12px; margin:0; flex: 1; background: #25D366; color: white;" 
-                                onclick="window.location.href='https://wa.me/${cleanPhone}?text=${waText}'">💬 WhatsApp</button>
-                        </div>
-                    </div>`;
-            });
-        }
-    }
-
-    function copyCard() {
-        const cardText = "4400430386921370";
-        navigator.clipboard.writeText(cardText).then(() => {
-            const status = document.getElementById('copyStatus');
-            status.innerText = "Нөмір көшірілді! Рахмет!";
-            status.style.color = "#28a745";
-            setTimeout(() => {
-                status.innerText = "Көшіру үшін нөмірді басыңыз";
-                status.style.color = "var(--gold)";
-            }, 3000);
-        });
+    function setLang(lang, el) {
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        // Тіл ауыстыру логикасын осында жалғастыруға болады
     }
 </script>
 </body>
