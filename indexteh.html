@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="kk" class="notranslate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="google" content="notranslate">
+    <title>ҚОРАМ-ШЕЛЕК ТАКСИ | ТЕХНИКАЛЫҚ ЖҰМЫСТАР</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="logo.png">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #D4AF37;
+            --dark: #0a0a0a;
+            --glass: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        html, body { width: 100%; height: 100%; margin: 0; padding: 0; background: var(--dark); overflow: hidden; }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            background-image: radial-gradient(circle at top right, #1a1a1a, #0a0a0a);
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .lang-picker {
+            position: absolute;
+            top: 30px;
+            display: flex; gap: 15px; background: var(--glass);
+            padding: 10px 20px; border-radius: 20px; border: 1px solid var(--border);
+            z-index: 10;
+        }
+        .lang-btn { cursor: pointer; opacity: 0.5; transition: 0.3s; font-size: 14px; font-weight: 600; }
+        .lang-btn.active { opacity: 1; color: var(--gold); transform: scale(1.1); }
+
+        .container { 
+            width: 85%; max-width: 380px; padding: 30px; background: var(--glass);
+            backdrop-filter: blur(15px); border-radius: 32px; border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .logo-wrapper {
+            width: 80px; height: 80px; margin: 0 auto 25px auto;
+            background: #000; border-radius: 22px; padding: 8px;
+            border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+        }
+        .main-logo { width: 100%; height: auto; border-radius: 12px; }
+
+        .maintenance-icon { font-size: 45px; margin-bottom: 20px; display: block; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
+
+        h2 { font-weight: 400; letter-spacing: 1px; color: var(--gold); margin-bottom: 15px; text-transform: uppercase; font-size: 1.2rem; }
+        p { font-size: 14px; color: #aaa; line-height: 1.6; margin-bottom: 25px; min-height: 4.8em; }
+        
+        .admin-link {
+            display: inline-block; padding: 12px 25px; border: 1px solid var(--gold);
+            color: var(--gold); text-decoration: none; border-radius: 12px;
+            font-size: 14px; font-weight: 600; transition: 0.3s;
+        }
+        .admin-link:active { background: var(--gold); color: black; }
+
+        .footer { 
+            position: absolute; bottom: 30px; width: 90%; max-width: 400px; 
+            text-align: center; color: #666; font-size: 12px; 
+        }
+        .donation-box { 
+            margin-top: 15px; padding: 15px; background: rgba(212, 175, 55, 0.03); 
+            border-radius: 16px; border: 1px dashed rgba(212, 175, 55, 0.3); 
+        }
+        .card-number { display: block; font-size: 16px; color: #999; margin: 5px 0; font-family: monospace; letter-spacing: 1px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="lang-picker">
+    <div class="lang-btn active" onclick="setLang('kk', this)">KZ</div>
+    <div class="lang-btn" onclick="setLang('ru', this)">RU</div>
+    <div class="lang-btn" onclick="setLang('en', this)">EN</div>
+    <div class="lang-btn" onclick="setLang('ug', this)">УЙҒ</div>
+</div>
+
+<div class="container">
+    <div class="logo-wrapper"><img src="logo.png" alt="TAXI" class="main-logo"></div>
+    <span class="maintenance-icon">🛠️</span>
+    <h2 id="t-maint-title">Техникалық жұмыстар</h2>
+    <p id="t-maint-desc">
+        Жүйе жаңартылуда. Уақытша қолайсыздықтар үшін кешірім сұраймыз. Жақын арада қайта жұмыс істейміз!
+    </p>
+    <a href="https://wa.me/+77479416498" class="admin-link" id="t-admin">Администратор</a>
+</div>
+
+<div class="footer">
+    <p>© Тлепберген Қуаныш, 2026</p>
+    <div class="donation-box">
+        <span id="t-support" style="font-size: 10px; color: var(--gold); letter-spacing: 1px;">ЖОБА АВТОРЫНА ҚОЛДАУ:</span>
+        <span class="card-number" onclick="copyCard()">4400 4303 8692 1370</span>
+        <span id="copyStatus" style="font-size: 10px;">Көшіру үшін нөмірді басыңыз</span>
+    </div>
+</div>
+
+<script>
+    const i18n = {
+        kk: {
+            title: "Техникалық жұмыстар",
+            desc: "Жүйе жаңартылуда. Уақытша қолайсыздықтар үшін кешірім сұраймыз. Жақын арада қайта жұмыс істейміз!",
+            admin: "Администратор",
+            support: "ЖОБА АВТОРЫНА ҚОЛДАУ:",
+            copy: "Көшіру үшін нөмірді басыңыз",
+            copied: "Көшірілді! Рахмет!"
+        },
+        ru: {
+            title: "Технические работы",
+            desc: "Система обновляется. Просим прощения за временные неудобства. Скоро всё заработает!",
+            admin: "Администратор",
+            support: "ПОДДЕРЖКА АВТОРА ПРОЕКТА:",
+            copy: "Нажмите на номер, чтобы скопировать",
+            copied: "Скопировано! Спасибо!"
+        },
+        en: {
+            title: "Maintenance",
+            desc: "System is being updated. We apologize for the temporary inconvenience. We will be back online shortly!",
+            admin: "Administrator",
+            support: "SUPPORT THE PROJECT AUTHOR:",
+            copy: "Click the number to copy",
+            copied: "Copied! Thank you!"
+        },
+        ug: {
+            title: "Техникилиқ ишлар",
+            desc: "Система йеңилиниватиду. Вақтидин келишмәсликләр үчүн кечүрүм сораймиз. Йеқин арида ишлаймиз!",
+            admin: "Администратор",
+            support: "ЙОЛИНИҢ АВТОРИҒА ЧӘЙ-ПУЛ:",
+            copy: "Көчириш үчүн номуни бесиң",
+            copied: "Көчирилди! Рәхмәт!"
+        }
+    };
+
+    function setLang(lang, el) {
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        const t = i18n[lang];
+        document.getElementById('t-maint-title').innerText = t.title;
+        document.getElementById('t-maint-desc').innerText = t.desc;
+        document.getElementById('t-admin').innerText = t.admin;
+        document.getElementById('t-support').innerText = t.support;
+        document.getElementById('copyStatus').innerText = t.copy;
+        window.currentLang = lang;
+    }
+
+    function copyCard() {
+        navigator.clipboard.writeText("4400430386921370").then(() => {
+            const lang = window.currentLang || 'kk';
+            const status = document.getElementById('copyStatus');
+            status.innerText = i18n[lang].copied;
+            status.style.color = "#D4AF37";
+            setTimeout(() => { 
+                status.innerText = i18n[lang].copy; 
+                status.style.color = "#666";
+            }, 3000);
+        });
+    }
+</script>
+</body>
+</html>
