@@ -103,6 +103,9 @@
         .wa-btn { background: var(--wa-green); color: white; }
         .call-btn { background: var(--gold); color: black; }
 
+        .driver-help { margin-top: 20px; text-align: center; border-top: 1px solid var(--border); padding-top: 15px; }
+        .help-link { color: var(--gold); text-decoration: none; font-size: 13px; display: block; margin: 8px 0; font-weight: 400; }
+
         .footer { width: 90%; max-width: 420px; text-align: center; color: #666; font-size: 13px; padding-bottom: 40px; flex-shrink: 0; }
         .insta-link { display: inline-block; margin: 10px 0; color: var(--gold); text-decoration: none; font-weight: 600; }
         .donation-box { margin-top: 15px; padding: 15px; background: rgba(212, 175, 55, 0.05); border-radius: 16px; border: 1px dashed var(--gold); }
@@ -142,15 +145,15 @@
         </div>
         
         <div id="custom-route-box" style="display: none; margin-top: 10px;">
-            <span class="label" id="t-custom-label">Бағытты жазыңыз:</span>
+            <span class="label">Бағытты жазыңыз:</span>
             <input type="text" id="custom-route" placeholder="Мысалы: Қорам - Астана">
         </div>
 
-        <span class="label" id="t-label-info">Мәліметтер:</span>
+        <span class="label">Мәліметтер:</span>
         <input type="text" id="name" placeholder="Есіміңіз">
         <input type="tel" id="phone" placeholder="8 7XX XXX XX XX">
         
-        <span class="label" id="t-label-count">Адам саны:</span>
+        <span class="label">Адам саны:</span>
         <div class="pass-selector">
             <div class="pass-btn active" onclick="setP(1, this)">1</div>
             <div class="pass-btn" onclick="setP(2, this)">2</div>
@@ -160,7 +163,7 @@
             <div class="pass-btn" onclick="setP(6, this)">6</div>
         </div>
 
-        <span class="label" id="t-label-time">Уақыты:</span>
+        <span class="label">Уақыты:</span>
         <input type="time" id="time" value="12:00">
         
         <button class="main-btn btn-gold" id="t-send-btn" onclick="send()">ЖІБЕРУ</button>
@@ -172,6 +175,13 @@
         <input type="tel" id="d-phone" placeholder="8 7XX XXX XX XX">
         <input type="password" id="d-pin" placeholder="PIN" maxlength="4">
         <button class="main-btn btn-gold" id="t-login-btn" onclick="login()">КІРУ</button>
+        
+        <div class="driver-help">
+            <a href="https://wa.me/+77479416498" class="help-link" id="t-forgot">Құпия сөзді ұмыттыңыз ба?</a>
+            <a href="https://wa.me/+77479416498" class="help-link" id="t-reg">Тіркелу?</a>
+            <span style="font-size: 10px; color: #444;" id="t-wa-help">Бұл мәселе бойынша бізге WhatsApp-қа жазыңыз</span>
+        </div>
+
         <span class="back-link" onclick="show('screen-main')">← Артқа қайту</span>
     </div>
 
@@ -206,19 +216,23 @@
     const i18n = {
         kk: {
             title: "АЛМАТЫ-ҚОРАМ-ШЕЛЕК ТАКСИ", passBtn: "Жолаушы", driverBtn: "Жүргізуші", orderTitle: "Тапсырыс беру",
-            sendBtn: "ЖІБЕРУ", back: "← Артқа қайту", call: "📞 ҚОҢЫРАУ", support: "ЖОБА АВТОРЫНА ШӘЙ-ПҰЛ:"
+            sendBtn: "ЖІБЕРУ", back: "← Артқа қайту", call: "📞 ҚОҢЫРАУ", support: "ЖОБА АВТОРЫНА ШӘЙ-ПҰЛ:",
+            forgot: "Құпия сөзді ұмыттыңыз ба?", reg: "Тіркелу?", waHelp: "Бұл мәселе бойынша бізге WhatsApp-қа жазыңыз"
         },
         ru: {
             title: "ТАКСИ АЛМАТЫ-КОРАМ-ШЕЛЕК", passBtn: "Пассажир", driverBtn: "Водитель", orderTitle: "Заказать такси",
-            sendBtn: "ОТПРАВИТЬ", back: "← Назад", call: "📞 ЗВОНОК", support: "ПОДДЕРЖКА АВТОРА ПРОЕКТА:"
+            sendBtn: "ОТПРАВИТЬ", back: "← Назад", call: "📞 ЗВОНОК", support: "ПОДДЕРЖКА АВТОРА ПРОЕКТА:",
+            forgot: "Забыли пароль?", reg: "Регистрация?", waHelp: "Напишите нам на WhatsApp по этим вопросам"
         },
         en: {
             title: "ALMATY-QORAM-SHELEK TAXI", passBtn: "Passenger", driverBtn: "Driver", orderTitle: "Book a ride",
-            sendBtn: "SEND", back: "← Back", call: "📞 CALL", support: "SUPPORT THE PROJECT AUTHOR:"
+            sendBtn: "SEND", back: "← Back", call: "📞 CALL", support: "SUPPORT THE PROJECT AUTHOR:",
+            forgot: "Forgot password?", reg: "Registration?", waHelp: "Contact us on WhatsApp for these issues"
         },
         ug: {
             title: "АЛМАТА-ҚОРАМ-ШЕЛЕК ТАКСИСИ", passBtn: "Йолавчи", driverBtn: "Хайдичи", orderTitle: "Тапшуруқ бериш",
-            sendBtn: "ӘВӘТИШ", back: "← Кәйнигә қайтиш", call: "📞 ТЕЛЕФОН", support: "ЙОЛИНИҢ АВТОРИҒА ЧӘЙ-ПУЛ:"
+            sendBtn: "ӘВӘТИШ", back: "← Кәйнигә қайтиш", call: "📞 ТЕЛЕФОН", support: "ЙОЛИНИҢ АВТОРИҒА ЧӘЙ-ПУЛ:",
+            forgot: "Сөзбасқуни унтуп қалдиңизму?", reg: "Тизімлитиш?", waHelp: "Бу мәсилә бойичә бизгә WhatsApp арқилиқ йезиң"
         }
     };
 
@@ -234,6 +248,9 @@
         document.getElementById('t-send-btn').innerText = t.sendBtn;
         document.getElementById('t-back').innerText = t.back;
         document.getElementById('t-support').innerText = t.support;
+        document.getElementById('t-forgot').innerText = t.forgot;
+        document.getElementById('t-reg').innerText = t.reg;
+        document.getElementById('t-wa-help').innerText = t.waHelp;
         if(document.getElementById('screen-driver').classList.contains('active')) load();
     }
 
@@ -287,7 +304,7 @@
 
             list.innerHTML += `
                 <div class="order-card">
-                    <b>${o.route_from}</b><br>${o.name} (${o.passengers} адам)<br>⏰ ${o.time}
+                    <b>${o.route_from}</b><br>${o.name} (${o.passengers} адам)<br>⏳ ${o.time}
                     <div class="order-actions">
                         <button class="action-btn call-btn" onclick="window.location.href='tel:${o.phone}'">
                             ${i18n[curLang].call}
