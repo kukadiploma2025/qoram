@@ -199,7 +199,7 @@
 </div>
 
 <script>
-    // Supabase инициализациясы. fetch қателігін болдырмау үшін стандартты глобалды баптаулар қосылды
+    // Supabase инициализациясы
     const SUPABASE_URL = 'https://jgngutjzewogolzpopqt.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_kE0YDikrGftHwZXfMovSJw_7aMAIoFU';
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
@@ -351,6 +351,7 @@
 
         const fullTimeValue = `${finalDateStr}, ${t}`;
 
+        // 1. Алдымен мәліметті Supabase базасына жазамыз
         try {
             const { error } = await client.from('orders').insert([
                 { name: n, route_from: finalRoute, route_to: '', passengers: parseInt(passengers), time: fullTimeValue, phone: p }
@@ -358,10 +359,25 @@
             
             if (error) {
                 alert("База қатесі: " + error.message);
-            } else { 
-                alert("Сәтті! Тапсырыс қабылданды."); 
-                location.reload(); 
-            }
+                return; // Базаға жазылмаса, WhatsApp-қа өтпейді
+            } 
+            
+            // 2. Базаға сәтті жазылса, WhatsApp сілтемесін дайындаймыз
+            // Мәтін басын "Саламатсызба!" деп бастап, реттейміз
+            const whatsappText = `Саламатсызба! Тапсырыс беруші: ${n}.\nБағыты: ${finalRoute}.\nАдам саны: ${passengers} адам.\nУақыты: ${fullTimeValue}.\nТелефон: ${p}`;
+            
+            // Арнайы таңбаларды браузер түсінетін форматқа кодтау (encode)
+            const encodedText = encodeURIComponent(whatsappText);
+            
+            // Сенің басқарушы немесе диспетчер нөмірің (қажет болса ауыстырып ал)
+            const adminPhone = "77073155054"; 
+            const whatsappUrl = `https://wa.me/${adminPhone}?text=${encodedText}`;
+            
+            alert("Сәтті! Тапсырыс қабылданды. Қазір WhatsApp-қа бағытталасыз..."); 
+            
+            // WhatsApp-қа тікелей өту
+            window.location.href = whatsappUrl;
+
         } catch (err) {
             alert("Сервермен байланыс үзілді. Интернетті тексеріңіз немесе VPN өшіріңіз.");
             console.error(err);
@@ -410,7 +426,6 @@
                 status.style.color = "var(--gold)";
             }, 3000);
         }).catch(err => {
-            // Ескі немесе кейбір мобильный браузерлер үшін резервтік көшіру
             const el = document.createElement('textarea');
             el.value = cardText;
             document.body.appendChild(el);
