@@ -21,7 +21,6 @@
             --border: rgba(255, 255, 255, 0.1);
         }
 
-        /* ПИН-ЭФФЕКТ: блокировка скролла всей страницы */
         html, body { 
             position: fixed;
             overflow: hidden;
@@ -29,7 +28,7 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            touch-action: pan-y; /* Разрешаем только вертикальный скролл внутри контента */
+            touch-action: pan-y;
         }
 
         body { 
@@ -40,7 +39,7 @@
             flex-direction: column; 
             align-items: center; 
             background-image: radial-gradient(circle at top right, #1a1a1a, #0a0a0a);
-            overflow-y: auto; /* Скроллится только содержимое body */
+            overflow-y: auto; 
             -webkit-overflow-scrolling: touch;
         }
 
@@ -86,12 +85,14 @@
             font-size: 16px; box-sizing: border-box; outline: none; margin-bottom: 10px;
         }
 
-        .route-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .route-item { 
+        .route-grid, .date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .date-grid { grid-template-columns: 1fr 1fr 1fr; margin-bottom: 10px; }
+        
+        .route-item, .date-item { 
             background: rgba(255,255,255,0.04); padding: 10px; border-radius: 10px; 
             text-align: center; cursor: pointer; border: 1px solid transparent; font-size: 12px;
         }
-        .route-item.active { border-color: var(--gold); background: rgba(212, 175, 55, 0.1); color: var(--gold); }
+        .route-item.active, .date-item.active { border-color: var(--gold); background: rgba(212, 175, 55, 0.1); color: var(--gold); }
 
         .pass-selector { display: flex; justify-content: space-between; }
         .pass-btn { 
@@ -132,6 +133,7 @@
 
     <div id="screen-passenger" class="section">
         <h2 id="t-order-title" style="font-size: 18px;">Тапсырыс беру</h2>
+        
         <span class="label" id="t-label-route">Бағытты таңдаңыз:</span>
         <div class="route-grid" translate="no">
             <div class="route-item active" onclick="setR('Алматы - Қорам', this)">Алматы - Қорам</div>
@@ -141,9 +143,11 @@
             <div class="route-item" onclick="setR('Қорам - Шелек', this)">Қорам - Шелек</div>
             <div class="route-item" onclick="setR('Шелек - Қорам', this)">Шелек - Қорам</div>
         </div>
+        
         <span class="label" id="t-label-info">Мәліметтер:</span>
         <input type="text" id="name" placeholder="Есіміңіз">
         <input type="tel" id="phone" placeholder="8 7XX XXX XX XX">
+        
         <span class="label" id="t-label-count">Адам саны:</span>
         <div class="pass-selector">
             <div class="pass-btn active" onclick="setP(1, this)">1</div>
@@ -153,9 +157,17 @@
             <div class="pass-btn" onclick="setP(5, this)">5</div>
             <div class="pass-btn" onclick="setP(6, this)">6</div>
         </div>
+
+        <span class="label" id="t-label-date">Күнді таңдаңыз:</span>
+        <div class="date-grid">
+            <div class="date-item active" id="btn-today" onclick="setDateOption('today', this)">Бүгін</div>
+            <div class="date-item" id="btn-tomorrow" onclick="setDateOption('tomorrow', this)">Ертең</div>
+            <div class="date-item" id="btn-custom" onclick="setDateOption('custom', this)">Басқа күн</div>
+        </div>
+        <input type="date" id="custom-date-input" style="display: none;">
+
         <span class="label" id="t-label-time">Уақыты:</span>
-        <input type="time" id="time" value="12:00">
-        <button class="main-btn btn-gold" id="t-send-btn" onclick="send()">ЖІБЕРУ</button>
+        <input type="time" id="time" value=""> <button class="main-btn btn-gold" id="t-send-btn" onclick="send()">ЖІБЕРУ</button>
         <span class="back-link" id="t-back" onclick="show('screen-main')">← Артқа қайту</span>
     </div>
 
@@ -171,7 +183,7 @@
     <p>Астана қаласы | <span translate="no">Руы: Албан</span> (<span translate="no">Қорам</span> ауылы)</p>
     <a href="https://instagram.com/kukandrio" target="_blank" class="insta-link">📸 Instagram: @kukandrio</a>
     <div class="donation-box">
-        <span class="label" style="margin:0; color:var(--gold);">Жобаны қолдау (Шай-пұл):</span>
+        <span class="label" style="margin:0; color:var(--gold);" id="t-support">Жобаны қолдау (Шай-пұл):</span>
         <span class="card-number" id="cardNumber" onclick="copyCard()">4400 4303 8692 1370</span>
         <span class="copy-hint" id="copyStatus">Көшіру үшін нөмірді басыңыз</span>
     </div>
@@ -182,41 +194,48 @@
     const SUPABASE_KEY = 'sb_publishable_kE0YDikrGftHwZXfMovSJw_7aMAIoFU';
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // Тілдер жинағы
     const translations = {
         kk: {
             title: "АЛМАТЫ-ҚОРАМ-ШЕЛЕК ТАКСИ", passBtn: "Жолаушы", driverBtn: "Жүргізуші",
             orderTitle: "Тапсырыс беру", labelRoute: "Бағытты таңдаңыз:",
             labelInfo: "Мәліметтер:", namePh: "Есіміңіз", labelCount: "Адам саны:",
             labelTime: "Уақыты:", sendBtn: "ЖІБЕРУ", back: "← Артқа қайту",
-            listTitle: "Белсенді тапсырыстар", empty: "Тапсырыстар жоқ", call: "ҚОҢЫРАУ ШАЛУ"
+            listTitle: "Белсенді тапсырыстар", empty: "Тапсырыстар жоқ", call: "ҚОҢЫРАУ ШАЛУ",
+            labelDate: "Күнді таңдаңыз:", today: "Бүгін", tomorrow: "Ертең", customDate: "Басқа күн", support: "Жобаны қолдау (Шай-пұл):"
         },
         ru: {
             title: "ТАКСИ АЛМАТЫ-КОРАМ-ШЕЛЕК", passBtn: "Пассажир", driverBtn: "Водитель",
             orderTitle: "Заказать такси", labelRoute: "Выберите маршрут:",
             labelInfo: "Ваши данные:", namePh: "Ваше имя", labelCount: "Кол-во человек:",
             labelTime: "Время:", sendBtn: "ОТПРАВИТЬ", back: "← Назад",
-            listTitle: "Список заказов", empty: "Заказов пока нет", call: "ПОЗВОНИТЬ"
+            listTitle: "Список заказов", empty: "Заказов пока нет", call: "ПОЗВОНИТЬ",
+            labelDate: "Выберите день:", today: "Сегодня", tomorrow: "Завтра", customDate: "Другой день", support: "Поддержка проекта (Шай-пул):"
         },
         en: {
             title: "ALMATY-QORAM-SHELEK TAXI", passBtn: "Passenger", driverBtn: "Driver",
             orderTitle: "Book a Ride", labelRoute: "Select route:",
             labelInfo: "Details:", namePh: "Your name", labelCount: "Passengers:",
             labelTime: "Time:", sendBtn: "ORDER NOW", back: "← Back",
-            listTitle: "Active Orders", empty: "No orders found", call: "CALL DRIVER"
+            listTitle: "Active Orders", empty: "No orders found", call: "CALL DRIVER",
+            labelDate: "Select Date:", today: "Today", tomorrow: "Tomorrow", customDate: "Other day", support: "Support the author:"
         },
         ug: {
             title: "АЛМАТА-ҚОРАМ-ШЕЛЕК ТАКСИСИ", passBtn: "Йоловчи", driverBtn: "Ҳайдовчи",
             orderTitle: "Заказ бериш", labelRoute: "Йолни таллаң:",
             labelInfo: "Мәлумотлар:", namePh: "Исмиңиз", labelCount: "Адәм сани:",
             labelTime: "Вақти:", sendBtn: "ӘВӘТКҮШ", back: "← Кәйнигә",
-            listTitle: "Заказлар тизими", empty: "Заказлар йоқ", call: "ТЕЛЕФОН ҚИЛИШ"
+            listTitle: "Заказлар тизими", empty: "Заказлар йоқ", call: "ТЕЛЕФОН ҚИЛИШ",
+            labelDate: "Күнни таллаң:", today: "Бүгүн", tomorrow: "Әтә", customDate: "Башқа күн", support: "Йолиниң авториға чәй-пул:"
         }
     };
 
     let curLang = 'kk';
     let route = "Алматы - Қорам";
     let passengers = 1;
+    let selectedDateOption = "today"; 
 
+    // Тіл ауыстырғанда бәрін өзгерту
     function setLang(lang, el) {
         curLang = lang;
         document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
@@ -235,37 +254,83 @@
         document.getElementById('t-back').innerText = t.back;
         document.getElementById('t-back-driver').innerText = t.back;
         document.getElementById('t-list-title').innerText = t.listTitle;
+        document.getElementById('t-label-date').innerText = t.labelDate;
+        document.getElementById('btn-today').innerText = t.today;
+        document.getElementById('btn-tomorrow').innerText = t.tomorrow;
+        document.getElementById('btn-custom').innerText = t.customDate;
+        document.getElementById('t-support').innerText = t.support;
         if(document.getElementById('screen-driver').classList.contains('active')) load();
     }
 
+    // Экран ауыстырғыш
     function show(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         if(id === 'screen-driver') load();
     }
 
+    // Бағыт таңдау
     function setR(val, el) {
         route = val;
         document.querySelectorAll('.route-item').forEach(i => i.classList.remove('active'));
         el.classList.add('active');
     }
 
+    // Адам санын басу
     function setP(val, el) {
         passengers = val;
         document.querySelectorAll('.pass-btn').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
     }
 
+    // Күн таңдау логикасы
+    function setDateOption(option, el) {
+        selectedDateOption = option;
+        document.querySelectorAll('.date-item').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        
+        const dateInput = document.getElementById('custom-date-input');
+        if (option === 'custom') {
+            dateInput.style.display = 'block';
+        } else {
+            dateInput.style.display = 'none';
+            dateInput.value = '';
+        }
+    }
+
+    // Базаға жіберу
     async function send() {
         const n = document.getElementById('name').value;
         const p = document.getElementById('phone').value;
         const t = document.getElementById('time').value;
+        
         if(!n || !p || !t) return alert("Толтырыңыз!");
-        const { error } = await client.from('orders').insert([{ name: n, route_from: route, route_to: '', passengers, time: t, phone: p }]);
+
+        // Күннің мәнін анықтау
+        let finalDateStr = "";
+        const targetDate = new Date();
+
+        if (selectedDateOption === 'today') {
+            finalDateStr = "Бүгін";
+        } else if (selectedDateOption === 'tomorrow') {
+            finalDateStr = "Ертең";
+        } else {
+            const customVal = document.getElementById('custom-date-input').value;
+            if(!customVal) return alert("Күнді таңдаңыз!");
+            // Күнді оқылатын форматқа келтіру (КК.ММ.ЖЖЖЖ)
+            const d = new Date(customVal);
+            finalDateStr = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
+        }
+
+        // Уақыт өрісіне таңдалған күнді қосып жазу (мысалы: "Бүгін, 15:30" немесе "22.05.2026, 18:00")
+        const fullTimeValue = `${finalDateStr}, ${t}`;
+
+        const { error } = await client.from('orders').insert([{ name: n, route_from: route, route_to: '', passengers, time: fullTimeValue, phone: p }]);
         if (error) alert(error.message);
         else { alert("Сәтті! Тапсырыс қабылданды."); location.reload(); }
     }
 
+    // Жүргізушілерге тізімді шығару
     async function load() {
         const timeLimit = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
         const { data } = await client.from('orders').select('*').gt('created_at', timeLimit).order('created_at', { ascending: false });
@@ -278,13 +343,14 @@
                     <div class="order-card">
                         <div translate="no" style="color:var(--gold); font-size:12px; font-weight:600;">${o.route_from}</div>
                         <div style="margin:5px 0; font-size:16px;"><b>${o.name}</b> — ${o.passengers}</div>
-                        <div style="color:#666; font-size:13px;">${o.time}</div>
-                        <button class="main-btn btn-gold" style="padding:10px; font-size:12px;" onclick="window.location.href='tel:${o.phone}'">${t.call}</button>
+                        <div style="color:#aaa; font-size:13px;">⏳ ${o.time}</div>
+                        <button class="main-btn btn-gold" style="padding:10px; font-size:12px; margin-top:10px;" onclick="window.location.href='tel:${o.phone}'">${t.call}</button>
                     </div>`;
             });
         }
     }
 
+    // Карта көшіру
     function copyCard() {
         const cardText = "4400430386921370";
         navigator.clipboard.writeText(cardText).then(() => {
