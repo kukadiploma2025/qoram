@@ -107,6 +107,12 @@
 
         .order-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px; margin-bottom: 12px; border-left: 3px solid var(--gold); }
         
+        /* Жүргізуші батырмаларына арналған тор (сетка) */
+        .driver-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+        .action-btn { padding: 12px; font-size: 11px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-call { background: var(--gold); color: black; }
+        .btn-wa { background: transparent; color: #25D366; border: 1px solid #25D366; }
+
         .footer { width: 90%; max-width: 420px; text-align: center; color: #666; font-size: 13px; padding-bottom: 40px; flex-shrink: 0; }
         .insta-link { display: inline-block; margin: 10px 0; color: var(--gold); text-decoration: none; font-weight: 600; }
         .donation-box { margin-top: 15px; padding: 15px; background: rgba(212, 175, 55, 0.05); border-radius: 16px; border: 1px dashed var(--gold); }
@@ -199,7 +205,6 @@
 </div>
 
 <script>
-    // Supabase инициализациясы
     const SUPABASE_URL = 'https://jgngutjzewogolzpopqt.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_kE0YDikrGftHwZXfMovSJw_7aMAIoFU';
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
@@ -212,7 +217,8 @@
             orderTitle: "Тапсырыс беру", labelRoute: "Бағытты таңдаңыз:",
             labelInfo: "Мәліметтер:", namePh: "Есіміңіз", labelCount: "Адам саны:",
             labelTime: "Уақыты:", sendBtn: "ЖІБЕРУ", back: "← Артқа қайту",
-            listTitle: "Белсенді тапсырыстар", empty: "Тапсырыстар жоқ", call: "ҚОҢЫРАУ ШАЛУ",
+            listTitle: "Белсенді тапсырыстар", empty: "Тапсырыстар жоқ", 
+            callBtn: "📞 ҚОҢЫРАУ", waBtn: "💬 WHATSAPP",
             labelDate: "Күнді таңдаңыз:", today: "Бүгін", tomorrow: "Ертең", customDate: "Басқа күн", 
             support: "Жобаны қолдау (Шай-пұл):", routeCustom: "Басқа", routeCustomPh: "Бағытты жазыңыз (Мысалы: Қорам - Астана)"
         },
@@ -221,7 +227,8 @@
             orderTitle: "Заказать такси", labelRoute: "Выберите маршрут:",
             labelInfo: "Ваши данные:", namePh: "Ваше имя", labelCount: "Кол-во человек:",
             labelTime: "Время:", sendBtn: "ОТПРАВИТЬ", back: "← Назад",
-            listTitle: "Список заказов", empty: "Заказов пока нет", call: "ПОЗВОНИТЬ",
+            listTitle: "Список заказов", empty: "Заказов пока нет", 
+            callBtn: "📞 ЗВОНОК", waBtn: "💬 WHATSAPP",
             labelDate: "Выберите день:", today: "Сегодня", tomorrow: "Завтра", customDate: "Другой день", 
             support: "Поддержка проекта (Шай-пул):", routeCustom: "Другой", routeCustomPh: "Напишите маршрут (Например: Корам - Астана)"
         },
@@ -230,7 +237,8 @@
             orderTitle: "Book a Ride", labelRoute: "Select route:",
             labelInfo: "Details:", namePh: "Your name", labelCount: "Passengers:",
             labelTime: "Time:", sendBtn: "ORDER NOW", back: "← Back",
-            listTitle: "Active Orders", empty: "No orders found", call: "CALL DRIVER",
+            listTitle: "Active Orders", empty: "No orders found", 
+            callBtn: "📞 CALL", waBtn: "💬 WHATSAPP",
             labelDate: "Select Date:", today: "Today", tomorrow: "Tomorrow", customDate: "Other day", 
             support: "Support the author:", routeCustom: "Other", routeCustomPh: "Write your route (e.g. Qoram - Astana)"
         },
@@ -239,7 +247,8 @@
             orderTitle: "Заказ бериш", labelRoute: "Йолни таллаң:",
             labelInfo: "Мәлумотлар:", namePh: "Исмиңиз", labelCount: "Адәм сани:",
             labelTime: "Вақти:", sendBtn: "ӘВӘТКҮШ", back: "← Кәйнигә",
-            listTitle: "Заказлар тизими", empty: "Заказлар йоқ", call: "ТЕЛЕФОН ҚИЛИШ",
+            listTitle: "Заказлар тизими", empty: "Заказлар йоқ", 
+            callBtn: "📞 ТЕЛЕФОН", waBtn: "💬 WHATSAPP",
             labelDate: "Күнни таллаң:", today: "Бүгүн", tomorrow: "Әтә", customDate: "Башқа күн", 
             support: "Йолиниң авториға чәй-пул:", routeCustom: "Башқа", routeCustomPh: "Йолни йезиң (Мәсилән: Қорам - Астана)"
         }
@@ -351,7 +360,6 @@
 
         const fullTimeValue = `${finalDateStr}, ${t}`;
 
-        // 1. Алдымен мәліметті Supabase базасына жазамыз
         try {
             const { error } = await client.from('orders').insert([
                 { name: n, route_from: finalRoute, route_to: '', passengers: parseInt(passengers), time: fullTimeValue, phone: p }
@@ -359,29 +367,27 @@
             
             if (error) {
                 alert("База қатесі: " + error.message);
-                return; // Базаға жазылмаса, WhatsApp-қа өтпейді
-            } 
-            
-            // 2. Базаға сәтті жазылса, WhatsApp сілтемесін дайындаймыз
-            // Мәтін басын "Саламатсызба!" деп бастап, реттейміз
-            const whatsappText = `Саламатсызба! Тапсырыс беруші: ${n}.\nБағыты: ${finalRoute}.\nАдам саны: ${passengers} адам.\nУақыты: ${fullTimeValue}.\nТелефон: ${p}`;
-            
-            // Арнайы таңбаларды браузер түсінетін форматқа кодтау (encode)
-            const encodedText = encodeURIComponent(whatsappText);
-            
-            // Сенің басқарушы немесе диспетчер нөмірің (қажет болса ауыстырып ал)
-            const adminPhone = "77073155054"; 
-            const whatsappUrl = `https://wa.me/${adminPhone}?text=${encodedText}`;
-            
-            alert("Сәтті! Тапсырыс қабылданды. Қазір WhatsApp-қа бағытталасыз..."); 
-            
-            // WhatsApp-қа тікелей өту
-            window.location.href = whatsappUrl;
-
+            } else { 
+                alert("Сәтті! Тапсырыс қабылданды."); 
+                location.reload(); 
+            }
         } catch (err) {
             alert("Сервермен байланыс үзілді. Интернетті тексеріңіз немесе VPN өшіріңіз.");
             console.error(err);
         }
+    }
+
+    // Жүргізуші WhatsApp арқылы жазғанда іске қосылатын функция
+    function openWhatsAppDriver(phone, route, passengers, time) {
+        let cleanedPhone = phone.replace(/\D/g, '');
+        if(cleanedPhone.startsWith('8')) {
+            cleanedPhone = '7' + cleanedPhone.substring(1);
+        }
+        
+        // Хабарлама басы "Саламатсызба!" деп басталады
+        const msg = `Саламатсызба! Такси бойынша мазалап тұрмын.\n\nБағытыңыз: ${route}\nАдам саны: ${passengers} адам\nУақыты: ${time}`;
+        const url = `https://wa.me/${cleanedPhone}?text=${encodeURIComponent(msg)}`;
+        window.location.href = url;
     }
 
     async function load() {
@@ -400,12 +406,20 @@
             list.innerHTML = data && data.length ? "" : t.empty;
             if(data) {
                 data.forEach(o => {
+                    // Қоңырау шалу мен WhatsApp жазу екі бөлек батырмаға бөлінді
                     list.innerHTML += `
                         <div class="order-card">
                             <div translate="no" style="color:var(--gold); font-size:12px; font-weight:600;">${o.route_from}</div>
                             <div style="margin:5px 0; font-size:16px;"><b>${o.name}</b> — ${o.passengers}</div>
                             <div style="color:#aaa; font-size:13px;">⏳ ${o.time}</div>
-                            <button class="main-btn btn-gold" style="padding:10px; font-size:12px; margin-top:10px;" onclick="window.location.href='tel:${o.phone}'">${t.call}</button>
+                            <div class="driver-action-grid">
+                                <button class="action-btn btn-call" onclick="window.location.href='tel:${o.phone}'">
+                                    ${t.callBtn}
+                                </button>
+                                <button class="action-btn btn-wa" onclick="openWhatsAppDriver('${o.phone}', '${o.route_from}', ${o.passengers}, '${o.time}')">
+                                    ${t.waBtn}
+                                </button>
+                            </div>
                         </div>`;
                 });
             }
