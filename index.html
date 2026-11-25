@@ -1,454 +1,818 @@
 <!DOCTYPE html>
 <html lang="kk" class="notranslate">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="google" content="notranslate">
-    <title>ҚОРАМ-ШЕЛЕК ТАКСИ</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="google" content="notranslate">
+<meta name="theme-color" content="#07070a">
+<title>QORAM TAXI</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Qoram Taxi">
+<link rel="apple-touch-icon" href="logo.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07070a;--panel:#111116;--field:#0c0c10;--line:rgba(255,255,255,.08);
+  --gold:#E8BC3F;--gold-grad:linear-gradient(135deg,#F6D56A 0%,#E0A91F 55%,#BE8710 100%);
+  --text:#f4f4f6;--muted:#8d8d98;--green:#33d17a;--red:#ff6b6b;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Inter',system-ui,sans-serif;color:var(--text);min-height:100vh;min-height:100dvh;
+  background:
+    radial-gradient(900px 500px at 85% -10%,rgba(232,188,63,.16),transparent 60%),
+    radial-gradient(700px 500px at -10% 110%,rgba(232,188,63,.07),transparent 60%),
+    var(--bg);
+  background-attachment:fixed;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.ic{width:1.15em;height:1.15em;flex-shrink:0;vertical-align:middle}
+i[data-ic]{display:inline-flex;font-style:normal}
 
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Taxi">
-    <link rel="apple-touch-icon" href="logo.png">
+/* ---------- шапка ---------- */
+.top{max-width:480px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 16px) 18px 6px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{display:flex;align-items:center;gap:11px;min-width:0;cursor:pointer}
+.logo{width:42px;height:42px;border-radius:13px;background:#000;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.logo img{width:100%;height:100%;object-fit:cover}
+.logo b{color:var(--gold);font-size:15px;letter-spacing:1px}
+.brand strong{display:block;font-size:15px;font-weight:800;letter-spacing:1.5px}
+.brand small{display:block;color:var(--muted);font-size:11px;margin-top:1px}
+.lang{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
+.lang button{font:inherit;font-size:11px;font-weight:700;color:var(--muted);background:none;border:0;padding:7px 8px;border-radius:9px;cursor:pointer;letter-spacing:.3px}
+.lang button.active{background:var(--gold-grad);color:#1a1300}
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --gold: #D4AF37;
-            --dark: #0a0a0a;
-            --glass: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-        }
+/* ---------- экраны ---------- */
+.wrap{max-width:480px;margin:0 auto;padding:14px 18px 10px}
+.screen{display:none}
+.screen.active{display:block;animation:rise .35s ease}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-        html, body { 
-            position: fixed;
-            overflow: hidden;
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            touch-action: pan-y;
-        }
+/* ---------- главная ---------- */
+.hero{padding:22px 4px 20px}
+.hero h1{margin:0 0 10px;font-size:30px;line-height:1.15;font-weight:800;letter-spacing:-.5px}
+.hero h1 span{background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+.line{display:flex;align-items:center;margin:22px 0 26px;font-size:12px;font-weight:600}
+.line .stop{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:54px}
+.line .dot{width:12px;height:12px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 5px rgba(232,188,63,.15)}
+.line .bar{flex:1;height:2px;background:repeating-linear-gradient(90deg,rgba(232,188,63,.5) 0 6px,transparent 6px 12px);margin-bottom:22px}
+.role{display:flex;align-items:center;gap:16px;width:100%;text-align:left;font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:18px;margin-bottom:12px;cursor:pointer;transition:.2s}
+.role:active{transform:scale(.98)}
+.role .ico{width:54px;height:54px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:26px;background:rgba(232,188,63,.12);color:var(--gold);flex-shrink:0}
+.role.main{background:var(--gold-grad);border:0;color:#1a1300;box-shadow:0 12px 30px rgba(232,188,63,.25)}
+.role.main .ico{background:rgba(0,0,0,.12);color:#1a1300}
+.role b{display:block;font-size:18px;font-weight:700}
+.role small{display:block;margin-top:3px;font-size:12.5px;opacity:.7}
+.role .go{margin-left:auto;font-size:20px;opacity:.6}
 
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background: var(--dark); 
-            color: white; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            background-image: radial-gradient(circle at top right, #1a1a1a, #0a0a0a);
-            overflow-y: auto; 
-            -webkit-overflow-scrolling: touch;
-        }
+/* ---------- панели / формы ---------- */
+.title{font-size:22px;font-weight:800;margin:6px 4px 16px;letter-spacing:-.3px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:18px}
+.label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:16px 2px 8px}
+.label:first-child{margin-top:0}
+input{width:100%;padding:14px 15px;background:var(--field);border:1px solid var(--line);border-radius:14px;color:#fff;font:inherit;font-size:16px;outline:none;margin-bottom:10px;color-scheme:dark;transition:.2s}
+input::placeholder{color:#55555f}
+input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(232,188,63,.12)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.route-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.route-item,.chip{background:var(--field);border:1px solid var(--line);border-radius:13px;padding:12px 6px;text-align:center;font-size:12.5px;font-weight:600;cursor:pointer;transition:.15s;color:#cfcfd6}
+.route-item .a{color:var(--gold);margin:0 3px}
+.route-item.active,.chip.active{border-color:var(--gold);background:rgba(232,188,63,.1);color:var(--gold)}
+.span2{grid-column:span 2}
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.pass-selector{display:flex;justify-content:space-between;gap:6px}
+.pass-btn{flex:1;max-width:48px;height:46px;display:flex;align-items:center;justify-content:center;background:var(--field);border:1px solid var(--line);border-radius:14px;font-weight:700;cursor:pointer;transition:.15s}
+.pass-btn.active{background:var(--gold-grad);color:#1a1300;border:0}
 
-        .lang-picker {
-            margin-top: 20px;
-            display: flex; gap: 10px; background: var(--glass);
-            padding: 8px 15px; border-radius: 20px; border: 1px solid var(--border);
-            z-index: 10; flex-shrink: 0;
-        }
-        .lang-btn { cursor: pointer; opacity: 0.5; transition: 0.3s; font-size: 14px; font-weight: 600; }
-        .lang-btn.active { opacity: 1; color: var(--gold); transform: scale(1.1); }
+/* ---------- кнопки ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-size:14px;font-weight:700;border:0;border-radius:14px;padding:14px 16px;cursor:pointer;transition:.15s;text-decoration:none}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.5}
+.btn.block{width:100%;margin-top:14px;font-size:15px;padding:16px;letter-spacing:.5px}
+.btn.gold{background:var(--gold-grad);color:#1a1300;box-shadow:0 8px 22px rgba(232,188,63,.22)}
+.btn.ghost{background:transparent;color:var(--gold);border:1px solid rgba(232,188,63,.5)}
+.btn.call{background:var(--gold-grad);color:#1a1300}
+.btn.wa{background:rgba(51,209,122,.1);color:var(--green);border:1px solid rgba(51,209,122,.4)}
+.btn.ok{grid-column:span 2;background:rgba(255,255,255,.05);color:#fff;border:1px solid var(--line)}
+.btn.del{background:rgba(255,107,107,.08);color:var(--red);border:1px solid rgba(255,107,107,.35);width:100%;margin-top:12px}
+.link{display:block;text-align:center;margin:18px 0 4px;color:var(--gold);font-size:14px;font-weight:600;cursor:pointer}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;margin:2px 4px 10px;padding:6px 0}
 
-        .container { 
-            width: 90%; max-width: 420px; padding: 25px; background: var(--glass);
-            backdrop-filter: blur(15px); border-radius: 28px; border: 1px solid var(--border);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6); text-align: center; margin: 20px 0;
-            flex-shrink: 0;
-        }
+/* ---------- вкладки ---------- */
+.tabs{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:4px;margin-bottom:16px}
+.tab{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 4px;border-radius:12px;font-size:12.5px;font-weight:700;color:var(--muted);cursor:pointer;transition:.2s;white-space:nowrap}
+.tab.active{background:var(--gold-grad);color:#1a1300}
+.pane{display:none}
+.pane.active{display:block;animation:rise .3s ease}
 
-        .logo-wrapper {
-            width: 90px; height: 90px; margin: 0 auto 20px auto;
-            background: #000; border-radius: 22px; padding: 8px;
-            border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
-        }
-        .main-logo { width: 100%; height: auto; border-radius: 12px; }
+/* ---------- карточки ---------- */
+.ride{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:16px;margin-bottom:12px}
+.ride-head{display:flex;align-items:center;gap:12px}
+.ava{width:42px;height:42px;border-radius:14px;background:rgba(232,188,63,.14);color:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;flex-shrink:0}
+.who{min-width:0;flex:1}
+.who b{display:block;font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.who span{display:flex;align-items:center;gap:5px;color:var(--muted);font-size:12.5px;margin-top:2px}
+.pill{display:inline-flex;align-items:center;gap:5px;background:rgba(232,188,63,.12);color:var(--gold);border-radius:10px;padding:6px 10px;font-size:12.5px;font-weight:700;white-space:nowrap}
+.route{margin:14px 0 2px;font-size:15px;font-weight:700;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.route .arr{color:var(--gold)}
+.note{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12.5px;margin-top:8px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.stepper{display:flex;align-items:center;gap:14px;margin:6px 0 4px}
+.stepper button{width:44px;height:44px;border-radius:14px;border:1px solid rgba(232,188,63,.5);background:transparent;color:var(--gold);font-size:22px;font-weight:600;cursor:pointer;font-family:inherit}
+.stepper button:active{background:rgba(232,188,63,.12)}
+.stepper b{font-size:24px;min-width:28px;text-align:center}
+.stepper small{color:var(--muted);font-size:13px}
+.empty{text-align:center;color:var(--muted);font-size:14px;padding:34px 10px;background:var(--panel);border:1px dashed var(--line);border-radius:20px}
+.plan{text-align:center;color:var(--muted);font-size:12.5px;margin:12px 0 0}
+.plan:empty{display:none}
+.pcard{background:linear-gradient(160deg,#1c1810,#111116 62%);border:1px solid rgba(232,188,63,.28);border-radius:26px;padding:18px;margin-bottom:6px}
+.pc-top{display:flex;align-items:center;gap:14px}
+.pc-ava{width:64px;height:64px;border-radius:20px;background:var(--gold-grad);color:#1a1300;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;flex-shrink:0}
+.pc-info{min-width:0}
+.pc-info b{display:block;font-size:19px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-info span{display:block;color:var(--muted);font-size:13px;margin-top:3px}
+.pc-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.pc-stats div{background:rgba(255,255,255,.04);border-radius:16px;padding:12px;text-align:center}
+.pc-stats b{display:block;font-size:24px;font-weight:800;color:var(--gold)}
+.pc-stats small{color:var(--muted);font-size:11.5px}
+.pc-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.pc-actions .btn{padding:12px;font-size:13px}
+.pc-edit{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.blocked{display:none;margin-top:12px;background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.4);color:var(--red);padding:12px;border-radius:14px;font-size:13px;text-align:center}
+.sec{margin-top:26px}
+.or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12.5px;margin:18px 4px}
+.or:before,.or:after{content:'';flex:1;height:1px;background:var(--line)}
 
-        h2 { font-weight: 300; letter-spacing: 1px; color: var(--gold); margin-bottom: 25px; text-transform: uppercase; font-size: 1.1rem; }
-        
-        .main-btn { 
-            width: 100%; padding: 18px; margin: 10px 0; border-radius: 14px; border: none; 
-            font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s;
-        }
-        .btn-gold { background: var(--gold); color: black; }
-        .btn-outline { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
+/* ---------- окно подтверждения / уведомление ---------- */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center;z-index:100;padding:16px}
+.modal.show{display:flex}
+.sheet{background:#15151b;border:1px solid var(--line);border-radius:28px;padding:26px 22px 20px;width:100%;max-width:440px;text-align:center;animation:rise .3s ease}
+.sheet .bubble{width:60px;height:60px;border-radius:20px;background:rgba(232,188,63,.14);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 14px}
+.sheet h3{margin:0 0 8px;font-size:21px;font-weight:800}
+.sheet p{margin:0 0 6px;color:#b8b8c2;font-size:14.5px;line-height:1.6}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 24px);transform:translateX(-50%);background:#1d1d24;border:1px solid rgba(232,188,63,.5);padding:13px 18px;border-radius:16px;font-size:14px;font-weight:500;z-index:200;display:none;max-width:88%;text-align:center;box-shadow:0 12px 30px rgba(0,0,0,.5)}
 
-        .section { display: none; text-align: left; }
-        .section.active { display: block; }
-        .label { font-size: 10px; color: #777; text-transform: uppercase; margin: 15px 0 8px 5px; display: block; letter-spacing: 1px; }
-        
-        input { 
-            width: 100%; padding: 14px; background: rgba(255,255,255,0.03); 
-            border: 1px solid var(--border); border-radius: 12px; color: white; 
-            font-size: 16px; box-sizing: border-box; outline: none; margin-bottom: 10px;
-        }
-        input:focus {
-            border-color: var(--gold);
-            background: rgba(255,255,255,0.06);
-        }
-
-        .route-grid, .date-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .date-grid { grid-template-columns: 1fr 1fr 1fr; margin-bottom: 10px; }
-        
-        .route-item, .date-item { 
-            background: rgba(255,255,255,0.04); padding: 10px; border-radius: 10px; 
-            text-align: center; cursor: pointer; border: 1px solid transparent; font-size: 12px;
-        }
-        .route-item.active, .date-item.active { border-color: var(--gold); background: rgba(212, 175, 55, 0.1); color: var(--gold); }
-
-        .pass-selector { display: flex; justify-content: space-between; }
-        .pass-btn { 
-            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; 
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 50%; cursor: pointer;
-        }
-        .pass-btn.active { background: var(--gold); color: black; }
-
-        .order-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px; margin-bottom: 12px; border-left: 3px solid var(--gold); }
-        
-        /* Жүргізуші батырмаларына арналған тор (сетка) */
-        .driver-action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
-        .action-btn { padding: 12px; font-size: 11px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; transition: 0.2s; }
-        .btn-call { background: var(--gold); color: black; }
-        .btn-wa { background: transparent; color: #25D366; border: 1px solid #25D366; }
-
-        .footer { width: 90%; max-width: 420px; text-align: center; color: #666; font-size: 13px; padding-bottom: 40px; flex-shrink: 0; }
-        .insta-link { display: inline-block; margin: 10px 0; color: var(--gold); text-decoration: none; font-weight: 600; }
-        .donation-box { margin-top: 15px; padding: 15px; background: rgba(212, 175, 55, 0.05); border-radius: 16px; border: 1px dashed var(--gold); }
-        .card-number { display: block; font-size: 16px; color: white; margin: 8px 0; font-family: monospace; letter-spacing: 1px; cursor: pointer; }
-        .copy-hint { font-size: 10px; color: var(--gold); text-transform: uppercase; }
-        .back-link { display: block; text-align: center; margin-top: 20px; color: #555; font-size: 13px; cursor: pointer; }
-    </style>
+/* ---------- подвал ---------- */
+.footer{max-width:480px;margin:10px auto 0;padding:10px 18px calc(env(safe-area-inset-bottom) + 34px);text-align:center;color:#6a6a75;font-size:12.5px;line-height:1.7}
+.footer p{margin:0}
+.insta-link{display:inline-block;margin:10px 0 4px;color:var(--gold);text-decoration:none;font-weight:700;font-size:14px}
+.donation-box{margin-top:14px;padding:16px;background:var(--panel);border:1px dashed rgba(232,188,63,.5);border-radius:20px}
+.donation-box .label{margin:0 0 4px;color:var(--gold)}
+.card-number{display:block;font-size:18px;color:#fff;margin:8px 0;font-family:ui-monospace,monospace;letter-spacing:1.5px;cursor:pointer}
+.copy-hint{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px}
+</style>
 </head>
 <body>
 
-<div class="lang-picker">
-    <div class="lang-btn active" onclick="setLang('kk', this)">КЗ</div>
-    <div class="lang-btn" onclick="setLang('ru', this)">РУ</div>
-    <div class="lang-btn" onclick="setLang('en', this)">EN</div>
-    <div class="lang-btn" onclick="setLang('ug', this)">УЙҒ</div>
-</div>
+<header class="top">
+  <div class="brand" onclick="show('screen-main')">
+    <div class="logo"><img src="logo.png" alt="" onerror="this.parentNode.innerHTML='<b>QT</b>'"></div>
+    <div><strong translate="no">QORAM TAXI</strong><small translate="no">Алматы · Қорам · Шелек</small></div>
+  </div>
+  <div class="lang">
+    <button data-lang="kk" class="active">ҚАЗ</button>
+    <button data-lang="ru">РУС</button>
+    <button data-lang="en">ENG</button>
+    <button data-lang="ug">УЙҒ</button>
+  </div>
+</header>
 
-<div class="container">
-    <div class="logo-wrapper">
-        <img src="logo.png" alt="TAXI" class="main-logo">
+<main class="wrap">
+
+  <!-- ГЛАВНЫЙ ЭКРАН -->
+  <section id="screen-main" class="screen active">
+    <div class="hero">
+      <h1><span translate="no">QORAM TAXI</span><br><em style="font-style:normal;font-size:20px;font-weight:700" data-i="heroTitle"></em></h1>
+      <p data-i="heroSub"></p>
+    </div>
+    <div class="line" translate="no">
+      <div class="stop"><div class="dot"></div>Алматы</div><div class="bar"></div>
+      <div class="stop"><div class="dot"></div>Қорам</div><div class="bar"></div>
+      <div class="stop"><div class="dot"></div>Шелек</div>
+    </div>
+    <button class="role main" onclick="show('screen-passenger')">
+      <div class="ico"><i data-ic="user"></i></div>
+      <div><b data-i="passenger"></b><small data-i="passDesc"></small></div>
+      <span class="go">→</span>
+    </button>
+    <button class="role" onclick="openDriver()">
+      <div class="ico"><i data-ic="wheel"></i></div>
+      <div><b data-i="driver"></b><small data-i="drvDesc"></small></div>
+      <span class="go">→</span>
+    </button>
+  </section>
+
+  <!-- ПАССАЖИР -->
+  <section id="screen-passenger" class="screen">
+    <div class="back" onclick="show('screen-main')">← <span data-i="back"></span></div>
+    <div class="tabs">
+      <div class="tab active" data-tabgroup="p" data-tab="p-order"><i data-ic="plus"></i><span data-i="tabOrder"></span></div>
+      <div class="tab" data-tabgroup="p" data-tab="p-cars"><i data-ic="car"></i><span data-i="tabCars"></span></div>
     </div>
 
-    <div id="screen-main" class="section active">
-        <h2 id="t-title" translate="no">АЛМАТЫ-ҚОРАМ-ШЕЛЕК ТАКСИ</h2>
-        <button class="main-btn btn-gold" id="t-pass-btn" onclick="show('screen-passenger')">Жолаушы</button>
-        <button class="main-btn btn-outline" id="t-driver-btn" onclick="show('screen-driver')">Жүргізуші</button>
-    </div>
+    <div id="p-order" class="pane active">
+      <div class="panel">
+        <span class="label" data-i="route"></span>
+        <div class="route-grid" id="grid-p"></div>
+        <input type="text" id="custom-p" style="display:none;margin-top:10px" data-ph="routePh">
 
-    <div id="screen-passenger" class="section">
-        <h2 id="t-order-title" style="font-size: 18px;">Тапсырыс беру</h2>
-        
-        <span class="label" id="t-label-route">Бағытты таңдаңыз:</span>
-        <div class="route-grid">
-            <div class="route-item active" id="r1" translate="no" onclick="setR('standard', 'Алматы - Қорам', this)">Алматы - Қорам</div>
-            <div class="route-item" id="r2" translate="no" onclick="setR('standard', 'Қорам - Алматы', this)">Қорам - Алматы</div>
-            <div class="route-item" id="r3" translate="no" onclick="setR('standard', 'Алматы - Шелек', this)">Алматы - Шелек</div>
-            <div class="route-item" id="r4" translate="no" onclick="setR('standard', 'Шелек - Алматы', this)">Шелек - Алматы</div>
-            <div class="route-item" id="r5" translate="no" onclick="setR('standard', 'Қорам - Шелек', this)">Қорам - Шелек</div>
-            <div class="route-item" id="r6" translate="no" onclick="setR('standard', 'Шелек - Қорам', this)">Шелек - Қорам</div>
-            <div class="route-item" id="btn-route-custom" style="grid-column: span 2;" onclick="setR('custom', 'Басқа', this)">Басқа</div>
+        <span class="label" data-i="info"></span>
+        <input type="text" id="p-name" data-ph="yourName" autocomplete="name">
+        <input type="tel" id="p-phone" placeholder="8 7XX XXX XX XX" autocomplete="tel">
+
+        <span class="label" data-i="pax"></span>
+        <div class="pass-selector" id="p-pax"></div>
+
+        <span class="label" data-i="date"></span>
+        <div class="chips">
+          <div class="chip active" data-datechip="p" data-off="0" data-i="today"></div>
+          <div class="chip" data-datechip="p" data-off="1" data-i="tomorrow"></div>
         </div>
-        
-        <input type="text" id="custom-route-input" style="display: none; margin-top: 12px;" placeholder="Бағытты жазыңыз (Мысалы: Қорам - Астана)">
-
-        <span class="label" id="t-label-info">Мәліметтер:</span>
-        <input type="text" id="name" placeholder="Есіміңіз">
-        <input type="tel" id="phone" placeholder="8 7XX XXX XX XX">
-        
-        <span class="label" id="t-label-count">Адам саны:</span>
-        <div class="pass-selector">
-            <div class="pass-btn active" onclick="setP(1, this)">1</div>
-            <div class="pass-btn" onclick="setP(2, this)">2</div>
-            <div class="pass-btn" onclick="setP(3, this)">3</div>
-            <div class="pass-btn" onclick="setP(4, this)">4</div>
-            <div class="pass-btn" onclick="setP(5, this)">5</div>
-            <div class="pass-btn" onclick="setP(6, this)">6</div>
+        <div class="row2">
+          <input type="date" id="p-date">
+          <input type="time" id="p-time">
         </div>
-
-        <span class="label" id="t-label-date">Күнді таңдаңыз:</span>
-        <div class="date-grid">
-            <div class="date-item active" id="btn-today" onclick="setDateOption('today', this)">Бүгін</div>
-            <div class="date-item" id="btn-tomorrow" onclick="setDateOption('tomorrow', this)">Ертең</div>
-            <div class="date-item" id="btn-custom" onclick="setDateOption('custom', this)">Басқа күн</div>
-        </div>
-        <input type="date" id="custom-date-input" style="display: none;">
-
-        <span class="label" id="t-label-time">Уақыты:</span>
-        <input type="time" id="time" value=""> 
-        
-        <button class="main-btn btn-gold" id="t-send-btn" onclick="send()">ЖІБЕРУ</button>
-        <span class="back-link" id="t-back" onclick="show('screen-main')">← Артқа қайту</span>
+        <button class="btn gold block" id="p-send" onclick="sendNeed()"><span data-i="send"></span></button>
+      </div>
     </div>
 
-    <div id="screen-driver" class="section">
-        <h2 id="t-list-title" style="font-size: 18px;">Тапсырыстар</h2>
-        <div id="orders-list">...</div>
-        <span class="back-link" id="t-back-driver" onclick="show('screen-main')">← Артқа қайту</span>
+    <div id="p-cars" class="pane">
+      <div class="title" data-i="carsTitle"></div>
+      <div id="cars-list"></div>
     </div>
+  </section>
+
+  <!-- ВОДИТЕЛЬ: ВХОД / РЕГИСТРАЦИЯ -->
+  <section id="screen-dauth" class="screen">
+    <div class="back" onclick="show('screen-main')">← <span data-i="back"></span></div>
+    <div class="title" id="auth-title"></div>
+    <div class="panel">
+      <div id="reg-fields">
+        <input type="text" id="a-name" data-ph="yourName">
+        <input type="text" id="a-car" data-ph="car">
+        <input type="text" id="a-plate" data-ph="plate">
+      </div>
+      <input type="tel" id="a-phone" placeholder="8 7XX XXX XX XX">
+      <input type="password" id="a-pass" data-ph="password" inputmode="numeric" maxlength="4" autocomplete="current-password">
+      <button class="btn gold block" id="a-btn" onclick="doAuth()"></button>
+    </div>
+    <div class="or"><span data-i="or"></span></div>
+    <button class="btn ghost block" id="a-switch" style="margin-top:0" onclick="toggleAuth()"></button>
+  </section>
+
+  <!-- ВОДИТЕЛЬ: КАБИНЕТ (профиль -> заказы -> создать маршрут) -->
+  <section id="screen-dhome" class="screen">
+    <div class="back" onclick="show('screen-main')">← <span data-i="back"></span></div>
+
+    <div class="pcard">
+      <div class="pc-top">
+        <div class="pc-ava" id="pf-ava">?</div>
+        <div class="pc-info"><b id="pf-name"></b><span id="pf-meta"></span><span id="pf-phone"></span></div>
+      </div>
+      <div class="pc-stats">
+        <div><b id="st-accepted">0</b><small data-i="stAccepted"></small></div>
+        <div><b id="st-trips">0</b><small data-i="stTrips"></small></div>
+      </div>
+      <div class="plan" id="plan-info"></div>
+      <div class="blocked" id="blocked-note" data-i="blocked"></div>
+      <div class="pc-actions">
+        <button class="btn ghost" onclick="toggleEdit()"><span data-i="edit"></span></button>
+        <button class="btn ghost" onclick="logout()"><span data-i="logout"></span></button>
+      </div>
+      <div class="pc-edit" id="profile-edit">
+        <span class="label" data-i="yourName"></span>
+        <input type="text" id="pr-name">
+        <span class="label" data-i="phoneLbl"></span>
+        <input type="tel" id="pr-phone">
+        <span class="label" data-i="car"></span>
+        <input type="text" id="pr-car">
+        <span class="label" data-i="plate"></span>
+        <input type="text" id="pr-plate">
+        <button class="btn gold block" onclick="saveProfile()"><span data-i="save"></span></button>
+      </div>
+    </div>
+
+    <div class="title sec" data-i="listTitle"></div>
+    <div id="orders-list"></div>
+
+    <div class="title sec" data-i="createRoute"></div>
+    <div class="panel">
+      <span class="label" data-i="route"></span>
+      <div class="route-grid" id="grid-t"></div>
+      <input type="text" id="custom-t" style="display:none;margin-top:10px" data-ph="routePh">
+      <span class="label" data-i="seatsFree"></span>
+      <div class="stepper"><button onclick="tripSeatsChange(-1)">−</button><b id="t-seats">3</b><button onclick="tripSeatsChange(1)">+</button></div>
+      <span class="label" data-i="date"></span>
+      <div class="chips">
+        <div class="chip active" data-datechip="t" data-off="0" data-i="today"></div>
+        <div class="chip" data-datechip="t" data-off="1" data-i="tomorrow"></div>
+      </div>
+      <div class="row2">
+        <input type="date" id="t-date">
+        <input type="time" id="t-time">
+      </div>
+      <button class="btn gold block" onclick="postTrip()"><span data-i="publish"></span></button>
+    </div>
+
+    <div class="title sec" data-i="myTrips"></div>
+    <div id="my-trips"></div>
+  </section>
+</main>
+
+<footer class="footer">
+  <p>© Тлепберген Қуаныш, 2026</p>
+  <div class="donation-box">
+    <span class="label" data-i="support"></span>
+    <span class="card-number" onclick="copyCard()">4400 4303 8692 1370</span>
+    <span class="copy-hint" id="copyStatus"></span>
+  </div>
+</footer>
+
+<!-- Окно "Вы приняли клиента?" -->
+<div class="modal" id="accept-modal">
+  <div class="sheet">
+    <div class="bubble"><i data-ic="user"></i></div>
+    <h3 data-i="acceptQ"></h3>
+    <p id="accept-info"></p>
+    <button class="btn gold block" onclick="acceptPending(true)"><span data-i="yesTook"></span></button>
+    <button class="btn ghost block" onclick="acceptPending(false)"><span data-i="noTook"></span></button>
+  </div>
 </div>
-
-<div class="footer">
-    <p>© Тлепберген Қуаныш, 2026</p>
-    <p>Астана қаласы | <span translate="no">Руы: Албан</span> (<span translate="no">Қорам</span> ауылы)</p>
-    <a href="https://instagram.com/kukandrio" target="_blank" class="insta-link">📸 Instagram: @kukandrio</a>
-    <div class="donation-box">
-        <span class="label" style="margin:0; color:var(--gold);" id="t-support">Жобаны қолдау (Шай-пұл):</span>
-        <span class="card-number" id="cardNumber" onclick="copyCard()">4400 4303 8692 1370</span>
-        <span class="copy-hint" id="copyStatus">Көшіру үшін нөмірді басыңыз</span>
-    </div>
-</div>
+<div class="toast" id="toast"></div>
 
 <script>
-    const SUPABASE_URL = 'https://jgngutjzewogolzpopqt.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_kE0YDikrGftHwZXfMovSJw_7aMAIoFU';
-    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-        auth: { persistSession: false }
-    });
+/* ====== НАСТРОЙКИ ====== */
+const SUPABASE_URL = 'https://jgngutjzewogolzpopqt.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_kE0YDikrGftHwZXfMovSJw_7aMAIoFU';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const MAIL_DOMAIN = 'qoram-taxi.kz'; // телефон водителя -> логин phone@домен
+const pinToPass = pin => 'QT' + pin + 'kz'; // Supabase требует пароль от 6 символов, поэтому к PIN из 4 цифр добавлено окружение (то же в admin.html)
 
-    const translations = {
-        kk: {
-            title: "АЛМАТЫ-ҚОРАМ-ШЕЛЕК ТАКСИ", passBtn: "Жолаушы", driverBtn: "Жүргізуші",
-            orderTitle: "Тапсырыс беру", labelRoute: "Бағытты таңдаңыз:",
-            labelInfo: "Мәліметтер:", namePh: "Есіміңіз", labelCount: "Адам саны:",
-            labelTime: "Уақыты:", sendBtn: "ЖІБЕРУ", back: "← Артқа қайту",
-            listTitle: "Белсенді тапсырыстар", empty: "Тапсырыстар жоқ", 
-            callBtn: "📞 ҚОҢЫРАУ", waBtn: "💬 WHATSAPP",
-            labelDate: "Күнді таңдаңыз:", today: "Бүгін", tomorrow: "Ертең", customDate: "Басқа күн", 
-            support: "Жобаны қолдау (Шай-пұл):", routeCustom: "Басқа", routeCustomPh: "Бағытты жазыңыз (Мысалы: Қорам - Астана)"
-        },
-        ru: {
-            title: "ТАКСИ АЛМАТЫ-КОРАМ-ШЕЛЕК", passBtn: "Пассажир", driverBtn: "Водитель",
-            orderTitle: "Заказать такси", labelRoute: "Выберите маршрут:",
-            labelInfo: "Ваши данные:", namePh: "Ваше имя", labelCount: "Кол-во человек:",
-            labelTime: "Время:", sendBtn: "ОТПРАВИТЬ", back: "← Назад",
-            listTitle: "Список заказов", empty: "Заказов пока нет", 
-            callBtn: "📞 ЗВОНОК", waBtn: "💬 WHATSAPP",
-            labelDate: "Выберите день:", today: "Сегодня", tomorrow: "Завтра", customDate: "Другой день", 
-            support: "Поддержка проекта (Шай-пул):", routeCustom: "Другой", routeCustomPh: "Напишите маршрут (Например: Корам - Астана)"
-        },
-        en: {
-            title: "ALMATY-QORAM-SHELEK TAXI", passBtn: "Passenger", driverBtn: "Driver",
-            orderTitle: "Book a Ride", labelRoute: "Select route:",
-            labelInfo: "Details:", namePh: "Your name", labelCount: "Passengers:",
-            labelTime: "Time:", sendBtn: "ORDER NOW", back: "← Back",
-            listTitle: "Active Orders", empty: "No orders found", 
-            callBtn: "📞 CALL", waBtn: "💬 WHATSAPP",
-            labelDate: "Select Date:", today: "Today", tomorrow: "Tomorrow", customDate: "Other day", 
-            support: "Support the author:", routeCustom: "Other", routeCustomPh: "Write your route (e.g. Qoram - Astana)"
-        },
-        ug: {
-            title: "АЛМАТА-ҚОРАМ-ШЕЛЕК ТАКСИСИ", passBtn: "Йоловчи", driverBtn: "Ҳайдовчи",
-            orderTitle: "Заказ бериш", labelRoute: "Йолни таллаң:",
-            labelInfo: "Мәлумотлар:", namePh: "Исмиңиз", labelCount: "Адәм сани:",
-            labelTime: "Вақти:", sendBtn: "ӘВӘТКҮШ", back: "← Кәйнигә",
-            listTitle: "Заказлар тизими", empty: "Заказлар йоқ", 
-            callBtn: "📞 ТЕЛЕФОН", waBtn: "💬 WHATSAPP",
-            labelDate: "Күнни таллаң:", today: "Бүгүн", tomorrow: "Әтә", customDate: "Башқа күн", 
-            support: "Йолиниң авториға чәй-пул:", routeCustom: "Башқа", routeCustomPh: "Йолни йезиң (Мәсилән: Қорам - Астана)"
-        }
-    };
+/* ====== ИКОНКИ ====== */
+const PATHS = {
+ call:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>',
+ wa:'<path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 21l2-5.5A8.4 8.4 0 1 1 21 11.5z"/>',
+ check:'<polyline points="20 6 9 17 4 12"/>',
+ trash:'<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m5 0V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2"/>',
+ clock:'<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>',
+ user:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+ car:'<path d="M3 17h18v-4l-2-6a2 2 0 0 0-2-1H7a2 2 0 0 0-2 1l-2 6z"/><circle cx="7.5" cy="17" r="1.6"/><circle cx="16.5" cy="17" r="1.6"/>',
+ wheel:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><path d="M12 14v7M10 12H3.5M14 12h6.5"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'
+};
+const ic = n => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${PATHS[n]}</svg>`;
+document.querySelectorAll('[data-ic]').forEach(e => e.innerHTML = ic(e.dataset.ic));
 
-    let curLang = 'kk';
-    let selectedRouteType = "standard"; 
-    let routeValue = "Алматы - Қорам";
-    let passengers = 1;
-    let selectedDateOption = "today"; 
+/* ====== ПЕРЕВОДЫ ====== */
+const T = {
+kk:{heroTitle:'Алматы – Қорам – Шелек бағытындағы такси',heroSub:'Көлікті тез табыңыз немесе жолаушы тауып алыңыз.',
+ passenger:'Жолаушы',passDesc:'Такси тапсырыс беру',driver:'Жүргізуші',drvDesc:'Тапсырыстар мен бос орындар',back:'Артқа қайту',
+ tabOrder:'Тапсырыс',tabCars:'Көліктер',route:'Бағыт',other:'Басқа бағыт',
+ routePh:'Бағытты жазыңыз (мысалы: Қорам - Астана)',info:'Байланыс',yourName:'Есіміңіз',pax:'Адам саны',
+ date:'Күні мен уақыты',today:'Бүгін',tomorrow:'Ертең',send:'Тапсырыс беру',fill:'Барлық өрісті толтырыңыз!',
+ sent:'Тапсырыс қабылданды! Жүргізушілер хабарласады.',carsTitle:'Жолаушы іздеген көліктер',noCars:'Қазір көлік жоқ',
+ seats:'орын',call:'Қоңырау шалу',wa:'WhatsApp',took:'Клиентті алдым',
+ login:'Кіру',register:'Тіркелу',password:'PIN-код (4 сан)',car:'Көлік маркасы (Toyota Camry)',plate:'Көлік нөмірі (123ABC02)',
+ haveAcc:'Аккаунтыңыз бар ма? Кіру',noAcc:'Аккаунт жасау',or:'немесе',fillCar:'Есіміңізді, көлік маркасын және нөмірін жазыңыз!',wrong:'Телефон нөмірі немесе құпия сөз қате',
+ tabOrders:'Тапсырыстар',tabTrips:'Сапарларым',tabProfile:'Профиль',listTitle:'Белсенді тапсырыстар',noOrders:'Әзірге тапсырыс жоқ',
+ acceptQ:'Клиентті қабылдадыңыз ба?',yesTook:'Иә, қабылдадым',noTook:'Жоқ',accepted:'Тапсырыс тізімнен жойылды',
+ alreadyTaken:'Бұл клиентті басқа жүргізуші алып қойған',postTrip:'Жолаушы іздеймін',seatsFree:'Бос орын саны',
+ publish:'Жариялау',myTrips:'Менің сапарларым',del:'Жою',save:'Сақтау',saved:'Сақталды',logout:'Шығу',phoneLbl:'Телефон',
+ planPaid:'Жазылым мерзімі:',stAccepted:'Қабылданған клиент',stTrips:'Белсенді сапар',edit:'Өзгерту',createRoute:'Маршрут жасау',blocked:'Аккаунтыңыз тоқтатылған. Әкімшіге хабарласыңыз.',
+ support:'Жобаны қолдау (шай-пұл)',copyHint:'Көшіру үшін нөмірді басыңыз',copied:'Нөмір көшірілді! Рахмет!',
+ posted:'Сапар жарияланды',noTrips:'Сапарларыңыз жоқ',
+ wamsg:'Сәлеметсіз бе! Такси бойынша жазып тұрмын.',noNet:'Байланыс қатесі. Интернетті тексеріңіз.',
+ confirmOff:'Supabase-те Email confirmation өшірілмеген',phoneBad:'Телефон нөмірін дұрыс жазыңыз',passBad:'PIN 4 саннан тұруы керек'},
+ru:{heroTitle:'Такси по маршруту Алматы – Корам – Шелек',heroSub:'Быстро найдите машину или попутчиков.',
+ passenger:'Пассажир',passDesc:'Заказать такси',driver:'Водитель',drvDesc:'Заказы и свободные места',back:'Назад',
+ tabOrder:'Заказ',tabCars:'Машины',route:'Маршрут',other:'Другой маршрут',
+ routePh:'Напишите маршрут (например: Корам - Астана)',info:'Контакты',yourName:'Ваше имя',pax:'Количество человек',
+ date:'Дата и время',today:'Сегодня',tomorrow:'Завтра',send:'Отправить заказ',fill:'Заполните все поля!',
+ sent:'Заказ принят! Водители свяжутся с вами.',carsTitle:'Машины, которые ищут пассажиров',noCars:'Сейчас машин нет',
+ seats:'мест',call:'Позвонить',wa:'WhatsApp',took:'Я принял клиента',
+ login:'Вход',register:'Регистрация',password:'PIN-код (4 цифры)',car:'Марка (Toyota Camry)',plate:'Гос. номер (123ABC02)',
+ haveAcc:'Уже есть аккаунт? Войти',noAcc:'Создать аккаунт',or:'или',fillCar:'Укажите имя, марку и номер машины!',wrong:'Неверный телефон или пароль',
+ tabOrders:'Заказы',tabTrips:'Мои поездки',tabProfile:'Профиль',listTitle:'Активные заказы',noOrders:'Заказов пока нет',
+ acceptQ:'Вы приняли клиента?',yesTook:'Да, принял',noTook:'Нет',accepted:'Заказ убран из списка',
+ alreadyTaken:'Этого клиента уже забрал другой водитель',postTrip:'Ищу пассажиров',seatsFree:'Свободных мест',
+ publish:'Опубликовать',myTrips:'Мои поездки',del:'Удалить',save:'Сохранить',saved:'Сохранено',logout:'Выйти',phoneLbl:'Телефон',
+ planPaid:'Подписка до:',stAccepted:'Принято клиентов',stTrips:'Активных поездок',edit:'Изменить',createRoute:'Создать маршрут',blocked:'Ваш аккаунт заблокирован. Свяжитесь с администратором.',
+ support:'Поддержать проект (на чай)',copyHint:'Нажмите на номер, чтобы скопировать',copied:'Номер скопирован! Спасибо!',
+ posted:'Поездка опубликована',noTrips:'У вас пока нет поездок',
+ wamsg:'Здравствуйте! Пишу по поводу такси.',noNet:'Ошибка связи. Проверьте интернет.',
+ confirmOff:'В Supabase не отключено подтверждение email',phoneBad:'Введите номер телефона правильно',passBad:'PIN-код должен состоять из 4 цифр'},
+en:{heroTitle:'Taxi on the Almaty – Qoram – Shelek route',heroSub:'Find a ride or passengers quickly.',
+ passenger:'Passenger',passDesc:'Book a taxi',driver:'Driver',drvDesc:'Orders and free seats',back:'Back',
+ tabOrder:'Order',tabCars:'Cars',route:'Route',other:'Other route',
+ routePh:'Write your route (e.g. Qoram - Astana)',info:'Contact details',yourName:'Your name',pax:'Passengers',
+ date:'Date & time',today:'Today',tomorrow:'Tomorrow',send:'Book now',fill:'Please fill in all fields!',
+ sent:'Order received! Drivers will contact you.',carsTitle:'Cars looking for passengers',noCars:'No cars available right now',
+ seats:'seats',call:'Call',wa:'WhatsApp',took:'I took the client',
+ login:'Sign in',register:'Sign up',password:'PIN code (4 digits)',car:'Car make (Toyota Camry)',plate:'Plate number (123ABC02)',
+ haveAcc:'Already have an account? Sign in',noAcc:'Create account',or:'or',fillCar:'Enter your name, car make and plate number!',wrong:'Wrong phone number or password',
+ tabOrders:'Orders',tabTrips:'My trips',tabProfile:'Profile',listTitle:'Active orders',noOrders:'No orders yet',
+ acceptQ:'Did you accept the client?',yesTook:'Yes, accepted',noTook:'No',accepted:'Order removed from the list',
+ alreadyTaken:'Another driver has already taken this client',postTrip:'Looking for passengers',seatsFree:'Free seats',
+ publish:'Publish',myTrips:'My trips',del:'Delete',save:'Save',saved:'Saved',logout:'Log out',phoneLbl:'Phone',
+ planPaid:'Subscription until:',stAccepted:'Clients accepted',stTrips:'Active trips',edit:'Edit',createRoute:'Create a route',blocked:'Your account is blocked. Contact the administrator.',
+ support:'Support the project (tip)',copyHint:'Tap the number to copy',copied:'Number copied! Thank you!',
+ posted:'Trip published',noTrips:'You have no trips yet',
+ wamsg:'Hello! I am writing about the taxi.',noNet:'Connection error. Check your internet.',
+ confirmOff:'Email confirmation is not disabled in Supabase',phoneBad:'Enter a valid phone number',passBad:'PIN must be 4 digits'},
+ug:{heroTitle:'Алмата – Қорам – Шелек йолидики такси',heroSub:'Машина яки йолучи тез тепиң.',
+ passenger:'Йолучи',passDesc:'Такси заказ қилиш',driver:'Ҳәйдигүчи',drvDesc:'Заказлар вә бош орунлар',back:'Қайтиш',
+ tabOrder:'Заказ',tabCars:'Машинилар',route:'Йол',other:'Башқа йол',
+ routePh:'Йолни йезиң (мәсилән: Қорам - Астана)',info:'Алақә мәлуматлири',yourName:'Исмиңиз',pax:'Адәм сани',
+ date:'Күн вә вақит',today:'Бүгүн',tomorrow:'Әтә',send:'Заказ бериш',fill:'Һәммисини толдуруң!',
+ sent:'Заказ қобул қилинди! Ҳәйдигүчиләр сиз билән алақилишиду.',carsTitle:'Йолучи издигән машинилар',noCars:'Һазир машина йоқ',
+ seats:'орун',call:'Қоңғурақ қилиш',wa:'WhatsApp',took:'Клиентни қобул қилдим',
+ login:'Кириш',register:'Рәйхәттин өтүш',password:'PIN-код (4 рәқәм)',car:'Маркиси (Toyota Camry)',plate:'Нөмири (123ABC02)',
+ haveAcc:'Аккаунт барму? Кириш',noAcc:'Аккаунт түзүш',or:'яки',fillCar:'Исим, машина маркиси вә нөмирини йезиң!',wrong:'Телефон нөмири яки парол хата',
+ tabOrders:'Заказлар',tabTrips:'Сәпәрлирим',tabProfile:'Профиль',listTitle:'Паал заказлар',noOrders:'Һазирчә заказ йоқ',
+ acceptQ:'Клиентни қобул қилдиңизму?',yesTook:'Әйә, қилдим',noTook:'Яқ',accepted:'Заказ тизимликтин елинди',
+ alreadyTaken:'Бу клиентни башқа ҳәйдигүчи алди',postTrip:'Йолучи издәймән',seatsFree:'Бош орун сани',
+ publish:'Элан қилиш',myTrips:'Сәпәрлирим',del:'Өчүрүш',save:'Сақлаш',saved:'Сақланди',logout:'Чиқиш',phoneLbl:'Телефон',
+ planPaid:'Жазилим мәзгили:',stAccepted:'Қобул қилинған клиент',stTrips:'Паал сәпәр',edit:'Өзгәртиш',createRoute:'Маршрут түзүш',blocked:'Аккаунтуңиз тохтитилди. Администратор билән алақә қилиң.',
+ support:'Лайиһини қоллаш (чай пули)',copyHint:'Көчүрүш үчүн нөмирни бесиң',copied:'Нөмир көчүрүлди! Рәхмәт!',
+ posted:'Сәпәр элан қилинди',noTrips:'Һазирчә сәпириңиз йоқ',
+ wamsg:'Ассалавмуәләйкүм! Такси һәққидә язимән.',noNet:'Алақә хатаси. Интернетни тәкшүрүң.',
+ confirmOff:'Supabase\'тә email тәстиқи өчүрүлмигән',phoneBad:'Телефон нөмирини тоғра йезиң',passBad:'PIN 4 рәқәмдин болуш керәк'}
+};
 
-    function setLang(lang, el) {
-        curLang = lang;
-        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-        const t = translations[lang];
-        document.getElementById('t-title').innerText = t.title;
-        document.getElementById('t-pass-btn').innerText = t.passBtn;
-        document.getElementById('t-driver-btn').innerText = t.driverBtn;
-        document.getElementById('t-order-title').innerText = t.orderTitle;
-        document.getElementById('t-label-route').innerText = t.labelRoute;
-        document.getElementById('t-label-info').innerText = t.labelInfo;
-        document.getElementById('name').placeholder = t.namePh;
-        document.getElementById('t-label-count').innerText = t.labelCount;
-        document.getElementById('t-label-time').innerText = t.labelTime;
-        document.getElementById('t-send-btn').innerText = t.sendBtn;
-        document.getElementById('t-back').innerText = t.back;
-        document.getElementById('t-back-driver').innerText = t.back;
-        document.getElementById('t-list-title').innerText = t.listTitle;
-        document.getElementById('t-label-date').innerText = t.labelDate;
-        document.getElementById('btn-today').innerText = t.today;
-        document.getElementById('btn-tomorrow').innerText = t.tomorrow;
-        document.getElementById('btn-custom').innerText = t.customDate;
-        document.getElementById('t-support').innerText = t.support;
-        document.getElementById('btn-route-custom').innerText = t.routeCustom;
-        document.getElementById('custom-route-input').placeholder = t.routeCustomPh;
-        if(document.getElementById('screen-driver').classList.contains('active')) load();
+const CITY = {
+ 'Алматы':{kk:'Алматы',ru:'Алматы',en:'Almaty',ug:'Алмата'},
+ 'Қорам':{kk:'Қорам',ru:'Корам',en:'Qoram',ug:'Қорам'},
+ 'Шелек':{kk:'Шелек',ru:'Шелек',en:'Shelek',ug:'Шелек'}
+};
+const ROUTES = [['Алматы','Қорам'],['Қорам','Алматы'],['Алматы','Шелек'],['Шелек','Алматы'],['Қорам','Шелек'],['Шелек','Қорам']];
+
+/* ====== СОСТОЯНИЕ ====== */
+let lang = localStorage.getItem('lang') || 'kk';
+if (!T[lang]) lang = 'kk';
+let user = null, profile = null;
+let authMode = 'login';
+let paxCount = 1, tripSeats = 3;
+const routeState = { p: ROUTES[0].join(' - '), t: ROUTES[0].join(' - ') };
+let ordersCache = {};
+let pollTimer = null;
+const $ = id => document.getElementById(id);
+const tr = k => (T[lang] && T[lang][k]) || T.kk[k] || k;
+
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.style.display='block'; clearTimeout(t._h); t._h=setTimeout(()=>t.style.display='none',3500); }
+
+/* ====== ЯЗЫК ====== */
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i]').forEach(el => el.textContent = tr(el.dataset.i));
+  document.querySelectorAll('[data-ph]').forEach(el => el.placeholder = tr(el.dataset.ph));
+  document.querySelectorAll('.lang button').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  $('copyStatus').textContent = tr('copyHint');
+  renderRouteGrid('p'); renderRouteGrid('t');
+  updateAuthUI(); updatePlan();
+  refreshCurrent();
+}
+document.querySelectorAll('.lang button').forEach(b => b.onclick = () => { lang = b.dataset.lang; localStorage.setItem('lang', lang); applyLang(); });
+
+/* ====== НАВИГАЦИЯ ====== */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo({ top: 0 });
+  refreshCurrent();
+}
+function activeTab(group){ const t=document.querySelector(`.tab.active[data-tabgroup="${group}"]`); return t ? t.dataset.tab : null; }
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => {
+  const g = t.dataset.tabgroup;
+  document.querySelectorAll(`.tab[data-tabgroup="${g}"]`).forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  document.querySelectorAll(`#screen-${g==='p'?'passenger':'dhome'} .pane`).forEach(p => p.classList.toggle('active', p.id === t.dataset.tab));
+  refreshCurrent();
+});
+function refreshCurrent(){
+  clearInterval(pollTimer);
+  const scr = document.querySelector('.screen.active').id;
+  if (scr === 'screen-passenger' && activeTab('p') === 'p-cars') { loadCars(); pollTimer = setInterval(loadCars, 20000); }
+  if (scr === 'screen-dhome' && profile) {
+    renderProfile(); loadOrders(); loadMyTrips();
+    pollTimer = setInterval(loadOrders, 15000);
+  }
+}
+
+/* ====== МАРШРУТ / ДАТА ====== */
+function cityName(kkName){ return CITY[kkName] ? CITY[kkName][lang] : kkName; }
+function routeHtml(r){
+  const p = String(r).split(' - ');
+  if (p.length === 2 && CITY[p[0]] && CITY[p[1]]) return `<span>${esc(cityName(p[0]))}</span><span class="arr">→</span><span>${esc(cityName(p[1]))}</span>`;
+  return `<span>${esc(r)}</span>`;
+}
+function routeLabel(r){
+  const p = String(r).split(' - ');
+  return p.length === 2 && CITY[p[0]] && CITY[p[1]] ? `${cityName(p[0])} - ${cityName(p[1])}` : r;
+}
+function renderRouteGrid(k){
+  const g = $('grid-' + k);
+  g.innerHTML = ROUTES.map(r => {
+    const v = r.join(' - ');
+    return `<div class="route-item ${routeState[k]===v?'active':''}" translate="no" data-v="${v}">${cityName(r[0])}<span class="a">→</span>${cityName(r[1])}</div>`;
+  }).join('') + `<div class="route-item span2 ${routeState[k]==='custom'?'active':''}" data-v="custom">${tr('other')}</div>`;
+  g.querySelectorAll('.route-item').forEach(el => el.onclick = () => {
+    routeState[k] = el.dataset.v;
+    $('custom-' + k).style.display = el.dataset.v === 'custom' ? 'block' : 'none';
+    renderRouteGrid(k);
+  });
+}
+function getRoute(k){
+  if (routeState[k] !== 'custom') return routeState[k];
+  return $('custom-' + k).value.trim();
+}
+function pad(n){ return String(n).padStart(2,'0'); }
+function ymd(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+function setDateOffset(k, off){ const d=new Date(); d.setDate(d.getDate()+off); $(k+'-date').value = ymd(d); }
+document.querySelectorAll('.chip').forEach(c => c.onclick = () => {
+  const k = c.dataset.datechip;
+  document.querySelectorAll(`.chip[data-datechip="${k}"]`).forEach(x => x.classList.remove('active'));
+  c.classList.add('active'); setDateOffset(k, +c.dataset.off);
+});
+['p','t'].forEach(k => $(k+'-date').addEventListener('change', () => document.querySelectorAll(`.chip[data-datechip="${k}"]`).forEach(x => x.classList.remove('active'))));
+function getDepart(k){
+  const d = $(k+'-date').value, t = $(k+'-time').value;
+  if (!d || !t) return null;
+  const dt = new Date(`${d}T${t}`);
+  return isNaN(dt) ? null : dt.toISOString();
+}
+function fmt(iso){
+  const d = new Date(iso), n = new Date(), tm = new Date(); tm.setDate(n.getDate()+1);
+  const hm = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  if (ymd(d) === ymd(n)) return `${tr('today')}, ${hm}`;
+  if (ymd(d) === ymd(tm)) return `${tr('tomorrow')}, ${hm}`;
+  return `${pad(d.getDate())}.${pad(d.getMonth()+1)}.${d.getFullYear()}, ${hm}`;
+}
+const initial = n => (String(n||'?').trim().charAt(0) || '?').toUpperCase();
+
+/* ====== ТЕЛЕФОН ====== */
+function normPhone(s){
+  let d = String(s).replace(/\D/g,'');
+  if (d.length === 11 && d[0] === '8') d = '7' + d.slice(1);
+  if (d.length === 10) d = '7' + d;
+  return /^7\d{10}$/.test(d) ? d : null;
+}
+
+/* ====== ПАССАЖИР: ЗАКАЗ ====== */
+(function(){
+  const box = $('p-pax');
+  for (let i=1;i<=6;i++){
+    const b = document.createElement('div');
+    b.className = 'pass-btn' + (i===1?' active':''); b.textContent = i;
+    b.onclick = () => { paxCount = i; box.querySelectorAll('.pass-btn').forEach(x=>x.classList.remove('active')); b.classList.add('active'); };
+    box.appendChild(b);
+  }
+})();
+
+async function sendNeed(){
+  const name = $('p-name').value.trim(), phone = normPhone($('p-phone').value), route = getRoute('p'), dep = getDepart('p');
+  if (!name || !route || !dep) return toast(tr('fill'));
+  if (!phone) return toast(tr('phoneBad'));
+  const btn = $('p-send'); btn.disabled = true;
+  try {
+    const { error } = await sb.from('qt_rides').insert({ kind:'need', name, phone, route, seats:paxCount, depart_at:dep });
+    if (error) toast(error.message); else { toast(tr('sent')); $('p-name').value=''; $('p-phone').value=''; $('p-time').value=''; }
+  } catch(e){ toast(tr('noNet')); }
+  btn.disabled = false;
+}
+
+/* ====== ПАССАЖИР: СПИСОК МАШИН ====== */
+const since = () => new Date(Date.now() - 2*3600*1000).toISOString();
+function waLink(phone, text){ return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`; }
+
+async function loadCars(){
+  const list = $('cars-list');
+  try {
+    const { data, error } = await sb.from('qt_rides').select('*').eq('kind','offer').gt('seats',0).gt('depart_at',since()).order('depart_at');
+    if (error) { list.innerHTML = `<div class="empty">${esc(error.message)}</div>`; return; }
+    list.innerHTML = data.length ? data.map(r => `
+      <article class="ride">
+        <div class="ride-head">
+          <div class="ava">${esc(initial(r.name))}</div>
+          <div class="who"><b>${esc(r.name)}</b><span>${ic('clock')} ${esc(fmt(r.depart_at))}</span></div>
+          <div class="pill">${r.seats} ${tr('seats')}</div>
+        </div>
+        <div class="route" translate="no">${routeHtml(r.route)}</div>
+        ${r.note ? `<div class="note">${ic('car')} ${esc(r.note)}</div>` : ''}
+        <div class="actions">
+          <a class="btn call" href="tel:+${esc(r.phone)}">${ic('call')}<span>${tr('call')}</span></a>
+          <a class="btn wa" target="_blank" rel="noopener" href="${waLink(r.phone, tr('wamsg') + '\n' + routeLabel(r.route) + ', ' + fmt(r.depart_at))}">${ic('wa')}<span>${tr('wa')}</span></a>
+        </div>
+      </article>`).join('') : `<div class="empty">${tr('noCars')}</div>`;
+  } catch(e){ list.innerHTML = `<div class="empty">${tr('noNet')}</div>`; }
+}
+
+/* ====== ВОДИТЕЛЬ: ВХОД ====== */
+function updateAuthUI(){
+  const reg = authMode === 'register';
+  $('auth-title').textContent = tr(reg ? 'register' : 'login');
+  $('a-btn').textContent = tr(reg ? 'register' : 'login');
+  $('a-switch').textContent = tr(reg ? 'haveAcc' : 'noAcc');
+  $('reg-fields').style.display = reg ? 'block' : 'none';
+  $('a-pass').autocomplete = reg ? 'new-password' : 'current-password';
+}
+function toggleAuth(){ authMode = authMode === 'login' ? 'register' : 'login'; updateAuthUI(); }
+
+async function openDriver(){
+  if (!user) { const { data:{ session } } = await sb.auth.getSession(); user = session ? session.user : null; }
+  if (user) { await loadProfile(); show('screen-dhome'); checkPending(); }
+  else show('screen-dauth');
+}
+
+async function doAuth(){
+  const phone = normPhone($('a-phone').value), pass = $('a-pass').value;
+  if (!phone) return toast(tr('phoneBad'));
+  if (!/^\d{4}$/.test(pass)) return toast(tr('passBad'));
+  const email = `${phone}@${MAIL_DOMAIN}`;
+  const btn = $('a-btn'); btn.disabled = true;
+  try {
+    if (authMode === 'register') {
+      const name = $('a-name').value.trim(), car = $('a-car').value.trim(), plate = $('a-plate').value.trim().toUpperCase();
+      if (!name || !car || !plate) { btn.disabled = false; return toast(tr('fillCar')); }
+      const { data, error } = await sb.auth.signUp({ email, password: pinToPass(pass) });
+      if (error) { toast(error.message); btn.disabled = false; return; }
+      if (!data.session) { toast(tr('confirmOff')); btn.disabled = false; return; }
+      user = data.user;
+      const { error: e2 } = await sb.from('qt_drivers').insert({ id: user.id, name, phone, car, plate, login_phone: phone });
+      if (e2) { toast(e2.message); btn.disabled = false; return; }
+    } else {
+      const { data, error } = await sb.auth.signInWithPassword({ email, password: pinToPass(pass) });
+      if (error) { toast(tr('wrong')); btn.disabled = false; return; }
+      user = data.user;
     }
+    await loadProfile();
+    $('a-pass').value = '';
+    show('screen-dhome');
+  } catch(e){ toast(tr('noNet')); }
+  btn.disabled = false;
+}
 
-    function show(id) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        if(id === 'screen-driver') load();
-    }
+async function loadProfile(){
+  const { data } = await sb.from('qt_drivers').select('*').eq('id', user.id).maybeSingle();
+  profile = data;
+  if (!profile) {
+    const phone = (user.email || '').split('@')[0];
+    const { data: d2 } = await sb.from('qt_drivers').insert({ id: user.id, name: phone, phone, login_phone: phone }).select().maybeSingle();
+    profile = d2;
+  }
+  updatePlan();
+}
+async function logout(){ await sb.auth.signOut(); user = null; profile = null; show('screen-main'); }
 
-    function setR(type, textVal, el) {
-        document.querySelectorAll('.route-item').forEach(i => i.classList.remove('active'));
-        el.classList.add('active');
-        
-        const customInput = document.getElementById('custom-route-input');
-        if (type === 'custom') {
-            selectedRouteType = "custom";
-            customInput.style.display = 'block';
-            customInput.focus();
-        } else {
-            selectedRouteType = "standard";
-            routeValue = textVal; 
-            customInput.style.display = 'none';
-            customInput.value = '';
-        }
-    }
+function renderProfile(){
+  if (!profile) return;
+  $('pf-ava').textContent = initial(profile.name);
+  $('pf-name').textContent = profile.name || '';
+  $('pf-meta').textContent = [profile.car, profile.plate].filter(Boolean).join(' · ');
+  $('pf-phone').textContent = profile.phone ? '+' + profile.phone : '';
+  $('pr-name').value = profile.name || ''; $('pr-phone').value = profile.phone || '';
+  $('pr-car').value = profile.car || ''; $('pr-plate').value = profile.plate || '';
+  $('blocked-note').style.display = profile.is_blocked ? 'block' : 'none';
+  updatePlan();
+}
+function toggleEdit(){ const e = $('profile-edit'); e.style.display = e.style.display === 'block' ? 'none' : 'block'; }
+async function loadStats(){
+  if (!user) return;
+  const a = await sb.from('qt_ride_log').select('*', { count:'exact', head:true }).eq('driver_id', user.id).eq('event','accepted');
+  const t = await sb.from('qt_rides').select('*', { count:'exact', head:true }).eq('kind','offer').eq('driver_id', user.id).gt('depart_at', since());
+  $('st-accepted').textContent = a.count || 0; $('st-trips').textContent = t.count || 0;
+}
+function updatePlan(){
+  $('plan-info').textContent = profile && profile.paid_until ? `${tr('planPaid')} ${profile.paid_until}` : '';
+}
+async function saveProfile(){
+  const phone = normPhone($('pr-phone').value);
+  if (!phone) return toast(tr('phoneBad'));
+  const upd = { name: $('pr-name').value.trim(), phone, car: $('pr-car').value.trim(), plate: $('pr-plate').value.trim() };
+  const { error } = await sb.from('qt_drivers').update(upd).eq('id', user.id);
+  if (error) return toast(error.message);
+  Object.assign(profile, upd); renderProfile(); $('profile-edit').style.display = 'none'; toast(tr('saved'));
+}
 
-    function setP(val, el) {
-        passengers = val;
-        document.querySelectorAll('.pass-btn').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-    }
+/* ====== ВОДИТЕЛЬ: ЗАКАЗЫ ПАССАЖИРОВ ====== */
+async function loadOrders(){
+  const list = $('orders-list');
+  try {
+    const { data, error } = await sb.from('qt_rides').select('*').eq('kind','need').gt('depart_at',since()).order('depart_at');
+    if (error) { list.innerHTML = `<div class="empty">${esc(error.message)}</div>`; return; }
+    ordersCache = {}; data.forEach(r => ordersCache[r.id] = r);
+    list.innerHTML = data.length ? data.map(r => `
+      <article class="ride">
+        <div class="ride-head">
+          <div class="ava">${esc(initial(r.name))}</div>
+          <div class="who"><b>${esc(r.name)}</b><span>${ic('clock')} ${esc(fmt(r.depart_at))}</span></div>
+          <div class="pill">${ic('user')} ${r.seats}</div>
+        </div>
+        <div class="route" translate="no">${routeHtml(r.route)}</div>
+        <div class="actions">
+          <button class="btn call" data-act="call" data-id="${r.id}">${ic('call')}<span>${tr('call')}</span></button>
+          <button class="btn wa" data-act="wa" data-id="${r.id}">${ic('wa')}<span>${tr('wa')}</span></button>
+          <button class="btn ok" data-act="took" data-id="${r.id}">${ic('check')}<span>${tr('took')}</span></button>
+        </div>
+      </article>`).join('') : `<div class="empty">${tr('noOrders')}</div>`;
+  } catch(e){ list.innerHTML = `<div class="empty">${tr('noNet')}</div>`; }
+}
 
-    function setDateOption(option, el) {
-        selectedDateOption = option;
-        document.querySelectorAll('.date-item').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
-        
-        const dateInput = document.getElementById('custom-date-input');
-        if (option === 'custom') {
-            dateInput.style.display = 'block';
-        } else {
-            dateInput.style.display = 'none';
-            dateInput.value = '';
-        }
-    }
+/* Нажал "позвонить"/"WhatsApp" -> запоминаем, а когда вернётся в приложение - спрашиваем */
+function contact(id, how){
+  const r = ordersCache[id]; if (!r) return;
+  localStorage.setItem('pendingRide', id);
+  if (how === 'call') window.location.href = `tel:+${r.phone}`;
+  else window.location.href = waLink(r.phone, `${tr('wamsg')}\n${routeLabel(r.route)}\n${r.seats}\n${fmt(r.depart_at)}`);
+}
+async function checkPending(){
+  const id = localStorage.getItem('pendingRide');
+  if (!id || !user) return;
+  if (!ordersCache[id]) await loadOrders();
+  const r = ordersCache[id];
+  if (!r) { localStorage.removeItem('pendingRide'); return; }
+  $('accept-info').innerHTML = `<b>${esc(r.name)}</b><br>${esc(routeLabel(r.route))}<br>${esc(fmt(r.depart_at))}`;
+  $('accept-modal').classList.add('show');
+}
+async function acceptPending(yes){
+  const id = localStorage.getItem('pendingRide');
+  $('accept-modal').classList.remove('show');
+  localStorage.removeItem('pendingRide');
+  if (yes && id) await takeRide(id);
+}
+async function takeRide(id){
+  try {
+    const { data, error } = await sb.rpc('qt_accept_ride', { ride_id: id });
+    if (error) return toast(error.message);
+    toast(tr(data ? 'accepted' : 'alreadyTaken'));
+    loadOrders();
+  } catch(e){ toast(tr('noNet')); }
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) checkPending(); });
+window.addEventListener('focus', checkPending);
 
-    async function send() {
-        const n = document.getElementById('name').value.trim();
-        const p = document.getElementById('phone').value.trim();
-        const t = document.getElementById('time').value;
-        
-        if(!n || !p || !t) return alert("Толтырыңыз!");
+/* ====== ВОДИТЕЛЬ: МОИ ПОЕЗДКИ И МЕСТА ====== */
+function tripSeatsChange(d){ tripSeats = Math.max(1, Math.min(8, tripSeats + d)); $('t-seats').textContent = tripSeats; }
 
-        let finalRoute = "";
-        if (selectedRouteType === "custom") {
-            finalRoute = document.getElementById('custom-route-input').value.trim();
-            if(!finalRoute) return alert("Бағытты жазыңыз!");
-        } else {
-            finalRoute = routeValue;
-        }
+async function postTrip(){
+  const route = getRoute('t'), dep = getDepart('t');
+  if (!route || !dep) return toast(tr('fill'));
+  const note = [profile && profile.car, profile && profile.plate].filter(Boolean).join(' · ');
+  const { error } = await sb.from('qt_rides').insert({ kind:'offer', driver_id:user.id, name:profile.name, phone:profile.phone, route, seats:tripSeats, depart_at:dep, note });
+  if (error) return toast(error.message);
+  toast(tr('posted')); $('t-time').value = ''; loadMyTrips();
+}
+async function loadMyTrips(){
+  loadStats();
+  const box = $('my-trips');
+  const { data, error } = await sb.from('qt_rides').select('*').eq('kind','offer').eq('driver_id',user.id).gt('depart_at',since()).order('depart_at');
+  if (error) { box.innerHTML = `<div class="empty">${esc(error.message)}</div>`; return; }
+  box.innerHTML = data.length ? data.map(r => `
+    <article class="ride">
+      <div class="route" style="margin-top:0" translate="no">${routeHtml(r.route)}</div>
+      <div class="note">${ic('clock')} ${esc(fmt(r.depart_at))}</div>
+      <div class="stepper">
+        <button data-act="dec" data-id="${r.id}" data-s="${r.seats}">−</button>
+        <b>${r.seats}</b>
+        <button data-act="inc" data-id="${r.id}" data-s="${r.seats}">+</button>
+        <small>${tr('seats')}</small>
+      </div>
+      <button class="btn del" data-act="del" data-id="${r.id}">${ic('trash')}<span>${tr('del')}</span></button>
+    </article>`).join('') : `<div class="empty">${tr('noTrips')}</div>`;
+}
+async function setSeats(id, s){
+  s = Math.max(0, Math.min(8, s));
+  const { error } = await sb.from('qt_rides').update({ seats: s }).eq('id', id);
+  if (error) toast(error.message); else loadMyTrips();
+}
 
-        let finalDateStr = "";
-        if (selectedDateOption === 'today') {
-            finalDateStr = "Бүгін";
-        } else if (selectedDateOption === 'tomorrow') {
-            finalDateStr = "Ертең";
-        } else {
-            const customVal = document.getElementById('custom-date-input').value;
-            if(!customVal) return alert("Күнді таңдаңыз!");
-            const d = new Date(customVal);
-            finalDateStr = `${String(d.getDate()).padStart(2, '0')}.${String(d.getMonth() + 1).padStart(2, '0')}.${d.getFullYear()}`;
-        }
+/* ====== КНОПКИ В КАРТОЧКАХ ====== */
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const id = b.dataset.id, a = b.dataset.act;
+  if (a === 'call' || a === 'wa') contact(id, a);
+  else if (a === 'took') takeRide(id);
+  else if (a === 'inc') setSeats(id, +b.dataset.s + 1);
+  else if (a === 'dec') setSeats(id, +b.dataset.s - 1);
+  else if (a === 'del') sb.from('qt_rides').delete().eq('id', id).then(() => loadMyTrips());
+});
 
-        const fullTimeValue = `${finalDateStr}, ${t}`;
+/* ====== КОПИРОВАНИЕ КАРТЫ ====== */
+function copyCard(){
+  const txt = '4400430386921370';
+  const done = () => { const s=$('copyStatus'); s.textContent = tr('copied'); s.style.color='#33d17a'; setTimeout(()=>{ s.textContent=tr('copyHint'); s.style.color=''; },3000); };
+  if (navigator.clipboard) navigator.clipboard.writeText(txt).then(done).catch(done);
+  else { const el=document.createElement('textarea'); el.value=txt; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el); done(); }
+}
 
-        try {
-            const { error } = await client.from('orders').insert([
-                { name: n, route_from: finalRoute, route_to: '', passengers: parseInt(passengers), time: fullTimeValue, phone: p }
-            ]);
-            
-            if (error) {
-                alert("База қатесі: " + error.message);
-            } else { 
-                alert("Сәтті! Тапсырыс қабылданды."); 
-                location.reload(); 
-            }
-        } catch (err) {
-            alert("Сервермен байланыс үзілді. Интернетті тексеріңіз немесе VPN өшіріңіз.");
-            console.error(err);
-        }
-    }
-
-    // Жүргізуші WhatsApp арқылы жазғанда іске қосылатын функция
-    function openWhatsAppDriver(phone, route, passengers, time) {
-        let cleanedPhone = phone.replace(/\D/g, '');
-        if(cleanedPhone.startsWith('8')) {
-            cleanedPhone = '7' + cleanedPhone.substring(1);
-        }
-        
-        // Хабарлама басы "Саламатсызба!" деп басталады
-        const msg = `Саламатсызба! Такси бойынша мазалап тұрмын.\n\nБағытыңыз: ${route}\nАдам саны: ${passengers} адам\nУақыты: ${time}`;
-        const url = `https://wa.me/${cleanedPhone}?text=${encodeURIComponent(msg)}`;
-        window.location.href = url;
-    }
-
-    async function load() {
-        const list = document.getElementById('orders-list');
-        const t = translations[curLang];
-        
-        try {
-            const timeLimit = new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString();
-            const { data, error } = await client.from('orders').select('*').gt('created_at', timeLimit).order('created_at', { ascending: false });
-            
-            if (error) {
-                list.innerHTML = "Қателік: " + error.message;
-                return;
-            }
-
-            list.innerHTML = data && data.length ? "" : t.empty;
-            if(data) {
-                data.forEach(o => {
-                    // Қоңырау шалу мен WhatsApp жазу екі бөлек батырмаға бөлінді
-                    list.innerHTML += `
-                        <div class="order-card">
-                            <div translate="no" style="color:var(--gold); font-size:12px; font-weight:600;">${o.route_from}</div>
-                            <div style="margin:5px 0; font-size:16px;"><b>${o.name}</b> — ${o.passengers}</div>
-                            <div style="color:#aaa; font-size:13px;">⏳ ${o.time}</div>
-                            <div class="driver-action-grid">
-                                <button class="action-btn btn-call" onclick="window.location.href='tel:${o.phone}'">
-                                    ${t.callBtn}
-                                </button>
-                                <button class="action-btn btn-wa" onclick="openWhatsAppDriver('${o.phone}', '${o.route_from}', ${o.passengers}, '${o.time}')">
-                                    ${t.waBtn}
-                                </button>
-                            </div>
-                        </div>`;
-                });
-            }
-        } catch (err) {
-            list.innerHTML = "Тізімді жүктеу сәтсіз аяқталды.";
-            console.error(err);
-        }
-    }
-
-    function copyCard() {
-        const cardText = "4400430386921370";
-        navigator.clipboard.writeText(cardText).then(() => {
-            const status = document.getElementById('copyStatus');
-            status.innerText = "Нөмір көшірілді! Рахмет!";
-            status.style.color = "#28a745";
-            setTimeout(() => {
-                status.innerText = "Көшіру үшін нөмірді басыңыз";
-                status.style.color = "var(--gold)";
-            }, 3000);
-        }).catch(err => {
-            const el = document.createElement('textarea');
-            el.value = cardText;
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-            document.getElementById('copyStatus').innerText = "Нөмір көшірілді!";
-        });
-    }
+/* ====== СТАРТ ====== */
+setDateOffset('p', 0); setDateOffset('t', 0);
+applyLang();
+sb.auth.getSession().then(({ data:{ session } }) => { if (session) { user = session.user; checkPending(); } });
 </script>
 </body>
 </html>
