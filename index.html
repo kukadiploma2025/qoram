@@ -3,6 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<script>
+/* Instagram iOS: передаём страницу во внешний браузер */
+(function () {
+  const ua = navigator.userAgent || '';
+  const isInstagram = /Instagram/i.test(ua);
+  const isIOS = /iPhone|iPad|iPod/i.test(ua) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  if (!isInstagram || !isIOS) return;
+
+  const target = window.location.href;
+  window.location.replace(
+    'instagram://extbrowser/?url=' + encodeURIComponent(target)
+  );
+})();
+</script>
 <meta name="google" content="notranslate">
 <meta name="theme-color" content="#07070a">
 <title>QORAM TAXI</title>
