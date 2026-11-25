@@ -211,10 +211,9 @@ const EVENTS = { accepted:['Принял клиента','g'], trip_posted:['П�
 /* ---------- вход ---------- */
 async function login(){
   const raw = $('l-email').value.trim(), pass = $('l-pass').value;
-  // короткий логин (kuka) -> kuka@домен, пароль дополняется так же, как PIN водителей; полный email работает как обычно
-  const short = !raw.includes('@');
-  const email = short ? `${raw.toLowerCase()}@${MAIL_DOMAIN}` : raw;
-  const password = short ? pinToPass(pass) : pass;
+  // короткий логин (kuka) -> kuka@домен; пароль отправляется как введён; полный email тоже работает
+  const email = raw.includes('@') ? raw : `${raw.toLowerCase()}@${MAIL_DOMAIN}`;
+  const password = pass;
   $('l-err').textContent = '';
   if (!raw || !pass) { $('l-err').textContent = 'Введите логин и пароль'; return; }
   $('l-btn').disabled = true;
